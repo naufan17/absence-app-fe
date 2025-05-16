@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -33,12 +27,19 @@ export function LoginForm({
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    className="shadow-none"
                     required
                   />
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="password">Password</Label>
-                  <Input id="password" type="password" required />
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    placeholder="••••••••"
+                    className="shadow-none"
+                    required 
+                  />
                 </div>
                 <Button type="submit" className="w-full">
                   Login

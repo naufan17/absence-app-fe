@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 
@@ -35,6 +29,7 @@ export function RegisterForm({
                     id="name"
                     type="text"
                     placeholder="John Doe"
+                    className="shadow-none"
                     required
                   />
                 </div>
@@ -44,6 +39,7 @@ export function RegisterForm({
                     id="email"
                     type="email"
                     placeholder="m@example.com"
+                    className="shadow-none"
                     required
                   />
                 </div>
@@ -51,7 +47,9 @@ export function RegisterForm({
                   <Label htmlFor="password">Password</Label>
                   <Input 
                     id="password" 
-                    type="password" 
+                    type="password"
+                    placeholder="••••••••"
+                    className="shadow-none"
                     required 
                   />
                 </div>
@@ -60,6 +58,8 @@ export function RegisterForm({
                   <Input 
                     id="password" 
                     type="password" 
+                    placeholder="••••••••"
+                    className="shadow-none"
                     required 
                   />
                 </div>
