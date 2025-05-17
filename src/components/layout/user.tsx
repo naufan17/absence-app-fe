@@ -3,7 +3,7 @@ import { useLocation } from 'react-router-dom'
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
-import { GalleryVerticalEnd, User, ReceiptText, House } from "lucide-react"
+import { GalleryVerticalEnd, House, ReceiptText } from "lucide-react"
 
 const data = {
   menu: {
@@ -14,26 +14,20 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "/admin/dashboard",
+      url: "/user/dashboard",
       icon: House,
       isActive: true,
     },
     {
-      title: "User",
-      url: "/admin/user",
-      icon: User,
-      isActive: false,
-    },
-    {
       title: "Leave Request",
-      url: "/admin/leave-request",
+      url: "/user/leave-request",
       icon: ReceiptText,
       isActive: false,
     },
   ],
 }
 
-export default function AdminLayout({ children }: { children: React.ReactNode }) {
+export default function UserLayout({ children }: { children: React.ReactNode }) {
   const location = useLocation()
   const currentPath = location.pathname
 
