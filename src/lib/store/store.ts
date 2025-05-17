@@ -16,7 +16,7 @@ const persistConfig: {
   storage,
   transforms: [
     encryptTransform({
-      secretKey: 'secret',
+      secretKey: import.meta.env.VITE_SECRET_KEY,
       onError: function (error: any) {
         console.error(error)
       },
