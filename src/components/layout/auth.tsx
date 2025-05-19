@@ -1,5 +1,6 @@
 import { GalleryVerticalEnd } from "lucide-react";
 import { Link } from "react-router-dom";
+import { Toaster } from "sonner";
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -12,6 +13,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           Absence
         </Link>
         {children}
+        <Toaster />
       </div>
     </div>
   )

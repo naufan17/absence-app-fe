@@ -1,10 +1,12 @@
 import { AppSidebar } from "@/components/app-sidebar"
 import { useLocation } from 'react-router-dom'
-import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { GalleryVerticalEnd, House, ReceiptText, User } from "lucide-react"
 import { Toaster } from "../ui/sonner"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/lib/store/store"
 
 const data = {
   menu: {
@@ -21,13 +23,13 @@ const data = {
     },
     {
       title: "User",
-      url: "/verfikator/user",
+      url: "/verifikator/user",
       icon: User,
       isActive: false,
     },
     {
       title: "Leave Request",
-      url: "/verfikator/leave-request",
+      url: "/verifikator/leave-request",
       icon: ReceiptText,
       isActive: false,
     },
@@ -35,6 +37,7 @@ const data = {
 }
 
 export default function VerifikatorLayout({ children }: { children: React.ReactNode }) {
+  const role: string | null = useSelector((state: RootState) => state.auth.role);
   const location = useLocation()
   const currentPath = location.pathname
 
@@ -56,14 +59,14 @@ export default function VerifikatorLayout({ children }: { children: React.ReactN
             <Breadcrumb>
               <BreadcrumbList>
                 <BreadcrumbItem className="hidden md:block">
-                  <BreadcrumbLink href={activeBreadcrumb?.url || "/dashboard"}>
-                    {activeBreadcrumb?.title || "Dashboard"}
+                  <BreadcrumbLink href={`/${role}`}>
+                    {role ? role.charAt(0).toUpperCase() + role.slice(1) : ""}
                   </BreadcrumbLink>
                 </BreadcrumbItem>
                 <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  <BreadcrumbPage>Data Fetching</BreadcrumbPage>
-                </BreadcrumbItem>
+                  <BreadcrumbLink href={activeBreadcrumb?.url || "/dashboard"}>
+                    {activeBreadcrumb?.title || "Dashboard"}
+                  </BreadcrumbLink>
               </BreadcrumbList>
             </Breadcrumb>
           </div>
