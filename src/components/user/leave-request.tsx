@@ -2,10 +2,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
 import { Button } from "../ui/button";
-import { Edit } from "lucide-react";
+import { Edit, Trash, X } from "lucide-react";
 import { Input } from "../ui/input";
 import { Label } from "../ui/label";
-import { Select } from "../ui/select";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
+import { formatDateTime } from "@/lib/utils/formatTimeDate";
+import type { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
+import { useState } from "react";
 
 interface LeaveRequestTableProps {
   data: {
@@ -26,19 +32,104 @@ interface LeaveRequestTableProps {
       name: string;
     }[];
   };
+  fetchLeaveRequest: () => Promise<void>
 }
 
-export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
-  const formatDateTime = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    };
-    return new Date(date).toLocaleString(undefined, options);
+export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTableProps) {
+  const [leaveRequestsForm, setLeaveRequestsForm] = useState<{
+    id: string
+    title: string
+    description: string
+    startDate: string
+    endDate: string
+    leaveTypeId: string
+  }>({
+    id: '',
+    title: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    leaveTypeId: ''
+  })
+
+  const handleCancel = async (id: string) => {
+    try {
+      const response: AxiosResponse = await axiosInstance.put(`/user/leave-requests/${id}/cancel`)
+
+      toast.success("Success", {
+        description: response.data.message,
+        style: { 
+          color: 'green' 
+        },
+      })
+    } catch (error) {
+      console.error(error)
+      toast.error("Error", {
+        description: "Failed to cancel leave request",
+        style: { 
+          color: 'red' 
+        },
+      })
+    } finally {
+      fetchLeaveRequest();
+    }
+  }
+
+    const handleDelete = async (id: string) => {
+    try {
+      const response: AxiosResponse = await axiosInstance.delete(`/user/leave-requests/${id}`)
+
+      toast.success("Success", {
+        description: response.data.message,
+        style: { color: 'green' },
+      })
+    } catch (error) {
+      console.error(error)
+      toast.error("Error", {
+        description: "Failed to delete leave request",
+        style: { color: 'red' },
+      })
+    } finally {
+      fetchLeaveRequest();
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setLeaveRequestsForm({
+      ...leaveRequestsForm,
+      [e.target.name]: e.target.value
+    })
+  }
+  
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    try {
+      const response: AxiosResponse = await axiosInstance.put(`/user/leave-requests/${leaveRequestsForm.id}`, {
+        title: leaveRequestsForm.title,
+        description: leaveRequestsForm.description,
+        startDate: leaveRequestsForm.startDate + 'T00:00:00.000Z',
+        endDate: leaveRequestsForm.endDate + 'T23:59:00.000Z',
+        leaveTypeId: leaveRequestsForm.leaveTypeId
+      })
+
+      toast.success("Success", {
+        description: response.data.message,
+        style: { 
+          color: 'green' 
+        },
+      })
+    } catch (error) {
+      console.error(error)
+      toast.error("Error", {
+        description: "Failed to create leave request",
+        style: { 
+          color: 'red' 
+        },
+      })
+    } finally {
+      fetchLeaveRequest()
+    }
   }
 
   return (
@@ -47,10 +138,9 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
       <TableHeader>
         <TableRow>
           <TableHead>Title</TableHead>
-          <TableHead>Description</TableHead>
           <TableHead>Start Date</TableHead>
           <TableHead>End Date</TableHead>
-          <TableHead>Leave Type</TableHead>
+          <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Action</TableHead>
         </TableRow>
@@ -59,7 +149,6 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
         {data.leaveRequests.map((leaveReq) => (
           <TableRow key={leaveReq.id} className="py-2">
             <TableCell>{leaveReq.title}</TableCell>
-            <TableCell>{leaveReq.description}</TableCell>
             <TableCell>{formatDateTime(leaveReq.start_date)}</TableCell>
             <TableCell>{formatDateTime(leaveReq.end_date)}</TableCell>
             <TableCell>{leaveReq.leave_type.name}</TableCell>
@@ -69,7 +158,7 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
               ) : leaveReq.status === "cancel" ? (
                 <Badge className="bg-red-500">Cancel</Badge>
               ) : leaveReq.status === "revoked" ? (
-                <Badge className="bg-red-500">Revoked</Badge>
+                <Badge className="bg-orange-500">Revoked</Badge>
               ) : leaveReq.status === "approved" ? (
                 <Badge className="bg-green-500">Approved</Badge>
               ) : leaveReq.status === "rejected" ? (
@@ -77,81 +166,104 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
               ) : null}
             </TableCell>
             <TableCell>
-              {leaveReq.status === "pending" && ( 
+              {(leaveReq.status === "pending" || leaveReq.status === "revoked") && (      
                 <Dialog>
-                  <DialogTrigger>
+                  <DialogTrigger
+                    onClick={() =>
+                      setLeaveRequestsForm({
+                        id: leaveReq.id,
+                        title: leaveReq.title,
+                        description: leaveReq.description,
+                        startDate: leaveReq.start_date,
+                        endDate: leaveReq.end_date,
+                        leaveTypeId: leaveReq.leave_type.id,
+                      })
+                    }
+                  >
                     <Button variant="ghost" className="p-1.5 h-auto">
                       <Edit className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
                   <DialogContent>
-                    <form>
-                      <DialogHeader>
-                        <DialogTitle>
-                          Update Leave Request
-                        </DialogTitle>
-                        <DialogDescription>
-                          Make your changes here. Click save when you're done.
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex flex-col gap-6 mt-6">
-                        <div className="grid gap-2">
-                          <Input 
-                            type="hidden"
-                            name="id"
-                            value={leaveReq.id}
-                          />
-                          <Label htmlFor="title">Title</Label>
-                          <Input 
-                            id="title"
-                            type="text"
-                            name="title"
-                            value={leaveReq.title}
-                          /> 
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="description">Description</Label>
-                          <Input 
-                            id="description"
-                            type="text"
-                            name="description"
-                            value={leaveReq.description}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="start_date">Start Date</Label>
-                          <Input 
-                            id="start_date"
-                            type="date"
-                            name="start_date"
-                            value={leaveReq.start_date}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="end_date">End Date</Label>
-                          <Input 
-                            id="end_date"
-                            type="date"
-                            name="end_date"
-                            value={leaveReq.end_date}
-                          />
-                        </div>
-                        <div className="grid gap-2">
-                          <Label htmlFor="leaveReq_id">Leave Type</Label>
-                          <Select name="leaveReq_id">
+                    <DialogHeader>
+                      <DialogTitle>Edit Leave Request</DialogTitle>
+                      <DialogDescription>
+                        Update your leave request details below.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                      <Input
+                        type="hidden"
+                        name="id"
+                        value={leaveRequestsForm.id}
+                        onChange={handleChange}
+                      />
+                      <div className="grid gap-2">
+                        <Label htmlFor="title">Title</Label>
+                        <Input
+                          id="title"
+                          type="text"
+                          name="title"
+                          value={leaveRequestsForm.title}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="description">Description</Label>
+                        <Input
+                          id="description"
+                          type="text"
+                          name="description"
+                          value={leaveRequestsForm.description}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="start_date">Start Date</Label>
+                        <Input
+                          id="start_date"
+                          type="date"
+                          name="startDate"
+                          value={leaveRequestsForm.startDate}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="end_date">End Date</Label>
+                        <Input
+                          id="end_date"
+                          type="date"
+                          name="endDate"
+                          value={leaveRequestsForm.endDate}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="leaveTypeId">Leave Type</Label>
+                        <Select
+                          name="leaveTypeId"
+                          onValueChange={(value: string) =>
+                            setLeaveRequestsForm({
+                              ...leaveRequestsForm,
+                              leaveTypeId: value,
+                            })
+                          }
+                          value={leaveRequestsForm.leaveTypeId}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select Leave Type" />
+                          </SelectTrigger>
+                          <SelectContent>
                             {data.leaveTypes.map((leaveType) => (
-                              <option
-                                value={leaveType.id}
-                                selected={leaveType.id === leaveReq.leave_type.id}
-                              >
+                              <SelectItem key={leaveType.id} value={leaveType.id}>
                                 {leaveType.name}
-                              </option>
+                              </SelectItem>
                             ))}
-                          </Select>
-                        </div>
+                          </SelectContent>
+                        </Select>
                       </div>
                       <DialogFooter>
-                        <DialogClose>
+                        <DialogClose asChild>
                           <Button type="submit" className="mt-6">
                             Save changes
                           </Button>
@@ -161,6 +273,58 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
                   </DialogContent>
                 </Dialog>
               )}
+              {leaveReq.status === "pending" && (
+                <AlertDialog>
+                  <AlertDialogTrigger>
+                    <Button variant={"ghost"} className="p-1 h-auto">
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Cancel Leave Request
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Are you sure you want to cancel this leave request?
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>
+                        Cancel
+                      </AlertDialogCancel>
+                      <AlertDialogAction onClick={() => handleCancel(leaveReq.id)}>
+                        Continue
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              )}
+              <AlertDialog>
+                <AlertDialogTrigger>
+                  <Button variant={"ghost"} className="p-1 h-auto">
+                    <Trash className="h-4 w-4" />
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Delete Leave Request
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to delete this leave request?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>
+                      Cancel
+                    </AlertDialogCancel>
+                    <AlertDialogAction onClick={() => handleDelete(leaveReq.id)}>
+                      Continue
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </TableCell>
           </TableRow>
         ))}

@@ -45,7 +45,7 @@ export default function LeaveRequestPage() {
           {loading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
           ) : (
-            <LeaveRequestTable data={{ leaveRequests }} />
+            <LeaveRequestTable data={{ leaveRequests }} fetchLeaveRequest={fetchLeaveRequest} />
           )}
         </div>  
       </VerifikatorLayout>

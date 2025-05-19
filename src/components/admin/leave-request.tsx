@@ -1,5 +1,6 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
+import { formatDateTime } from "@/lib/utils/formatTimeDate";
 
 interface LeaveRequestTableProps {
   data: {
@@ -21,18 +22,6 @@ interface LeaveRequestTableProps {
 }
 
 export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
-  const formatDateTime = (date: string) => {
-    const options: Intl.DateTimeFormatOptions = {
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-      hour: "numeric",
-      minute: "numeric",
-      second: "numeric",
-    };
-    return new Date(date).toLocaleString(undefined, options);
-  }
-
   return (
     <div className="rounded-md border w-full mt-4">
     <Table>
@@ -40,7 +29,6 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
         <TableRow>
           <TableHead>User</TableHead>
           <TableHead>Title</TableHead>
-          <TableHead>Description</TableHead>
           <TableHead>Start Date</TableHead>
           <TableHead>End Date</TableHead>
           <TableHead>Leave Type</TableHead>
@@ -52,7 +40,6 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
           <TableRow key={leaveReq.id} className="py-2">
             <TableCell>{leaveReq.user.name}</TableCell>
             <TableCell>{leaveReq.title}</TableCell>
-            <TableCell>{leaveReq.description}</TableCell>
             <TableCell>{formatDateTime(leaveReq.start_date)}</TableCell>
             <TableCell>{formatDateTime(leaveReq.end_date)}</TableCell>
             <TableCell>{leaveReq.leave_type.name}</TableCell>
@@ -62,7 +49,7 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
               ) : leaveReq.status === "cancel" ? (
                 <Badge className="bg-red-500">Cancel</Badge>
               ) : leaveReq.status === "revoked" ? (
-                <Badge className="bg-red-500">Revoked</Badge>
+                <Badge className="bg-orange-500">Revoked</Badge>
               ) : leaveReq.status === "approved" ? (
                 <Badge className="bg-green-500">Approved</Badge>
               ) : leaveReq.status === "rejected" ? (
