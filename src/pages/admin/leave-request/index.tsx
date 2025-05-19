@@ -24,12 +24,13 @@ export default function LeaveRequestPage() {
         id: string
         name: string
       },
-      status: string
+      status: string,
+      comment: string | null
     }>>([])
   
     const fetchLeaveRequest = async () => {
       setLoading(true)
-      
+
       try {
         const response: AxiosResponse = await axiosInstance.get('/admin/leave-requests',{
           params: {

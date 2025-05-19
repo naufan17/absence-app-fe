@@ -24,7 +24,8 @@ export default function LeaveRequestPage() {
       id: string
       name: string
     },
-    status: string
+    status: string,
+    comment: string | null
   }>>([])
 
   const fetchLeaveRequest = async () => {
