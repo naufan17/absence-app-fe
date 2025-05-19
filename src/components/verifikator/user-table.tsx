@@ -45,7 +45,6 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
           <TableHead>Is Verified</TableHead>
@@ -55,7 +54,6 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
       <TableBody>
         {data.users.map((user) => (
           <TableRow key={user.id} className="py-2">
-            <TableCell className="font-medium">{user.id}</TableCell>
             <TableCell>{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
             <TableCell>
