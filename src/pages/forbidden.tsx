@@ -12,7 +12,7 @@ export default function ForbiddenPage() {
         Page Forbidden
       </p>
       <button
-        onClick={() => navigate(-2)}
+        onClick={() => navigate(-3)}
         className="text-blue-500 cursor-pointer"
       >
         Go Back

@@ -26,14 +26,15 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar"
-import { useNavigate } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
 import { setLogout } from "@/lib/store/slices/auth.slice"
-import type { AppDispatch } from "@/lib/store/store"
-import { useDispatch } from "react-redux"
+import type { AppDispatch, RootState } from "@/lib/store/store"
+import { useDispatch, useSelector } from "react-redux"
 import axiosInstance from "@/lib/axios"
 
 export function NavUser() {
+  const role = useSelector((state: RootState) => state.auth.role)
   const [loading, setLoading] = useState<boolean>(true)
   const [user, setUser] = useState<{ name: string; email: string; }>({ name: "", email: "" })
   const [avatar] = useState<string>("/images/avatar.png")
@@ -107,10 +108,12 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
-                <BadgeCheck />
-                Account
-              </DropdownMenuItem>
+              <Link to={`/${role}/account`}>
+                <DropdownMenuItem>
+                  <BadgeCheck />
+                  Account
+                </DropdownMenuItem>
+              </Link>
               <div onClick={handleLogout}>
                 <DropdownMenuItem>
                   <LogOut />

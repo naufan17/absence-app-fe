@@ -4,6 +4,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { GalleryVerticalEnd, House, ReceiptText, User } from "lucide-react"
+import { Toaster } from "../ui/sonner"
 
 const data = {
   menu: {
@@ -68,6 +69,7 @@ export default function VerifikatorLayout({ children }: { children: React.ReactN
           </div>
         </header>
         {children}
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   )

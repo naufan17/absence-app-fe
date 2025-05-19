@@ -4,6 +4,7 @@ import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbP
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { GalleryVerticalEnd, User, ReceiptText, House } from "lucide-react"
+import { Toaster } from "../ui/sonner"
 
 const data = {
   menu: {
@@ -68,6 +69,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           </div>
         </header>
         {children}
+        <Toaster />
       </SidebarInset>
     </SidebarProvider>
   )
