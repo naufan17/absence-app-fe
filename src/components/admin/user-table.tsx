@@ -1,7 +1,7 @@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Check, Ellipsis, X } from "lucide-react";
+import { Ellipsis } from "lucide-react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
@@ -13,7 +13,6 @@ interface UserTableProps {
     id: string;
     name: string;
     email: string;
-    is_verified: string;
     role: string
    }[] 
   };
@@ -50,7 +49,6 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
           <TableHead>ID</TableHead>
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
-          <TableHead>Is Verified</TableHead>
           <TableHead>Role</TableHead>
           <TableHead>Action</TableHead>
         </TableRow>
@@ -61,21 +59,6 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
             <TableCell className="font-medium">{user.id}</TableCell>
             <TableCell>{user.name}</TableCell>
             <TableCell>{user.email}</TableCell>
-            <TableCell>
-              {user.is_verified ? (
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-green-500">
-                    <Check />
-                  </Badge>
-                </div>
-              ):(
-                <div className="flex items-center gap-2">
-                  <Badge className="bg-red-500">
-                    <X />
-                  </Badge>
-                </div>
-              )}
-            </TableCell>
             <TableCell>
               {user.role === 'verifikator' ? (
                 <Badge>

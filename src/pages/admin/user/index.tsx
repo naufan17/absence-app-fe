@@ -11,7 +11,6 @@ export default function UserPage() {
     id: string
     name: string
     email: string
-    is_verified: string
     role: string
   }>>([])
 

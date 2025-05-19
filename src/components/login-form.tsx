@@ -69,7 +69,9 @@ export function LoginForm({
               {error && 
                 <Alert variant="destructive" className="border-destructive">
                   <AlertCircle className="h-4 w-4" />
-                  <AlertTitle className="mb-0 tracking-normal">{error}</AlertTitle>
+                  <AlertTitle className="mb-0 tracking-normal">
+                    {error}
+                  </AlertTitle>
                 </Alert>
               }
               <div className="grid gap-6">
