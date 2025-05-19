@@ -28,7 +28,6 @@ axiosInstance.interceptors.response.use(
     if (
       error.response?.data.message === 'Access token is invalid' ||
       error.response?.data.message === 'User not found' ||
-      error.response?.data.message === 'User is not verified' ||
       error.response?.data.message === 'jwt expired' ||
       error.response?.data.message === 'jwt malformed' ||
       error.response?.data.message === 'jwt signature is required'

@@ -208,6 +208,10 @@ export default function LeaveRequestPage() {
           </div>
           {loading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
+          ) : leaveRequests.length === 0 ? (
+            <div className="flex h-32 items-center justify-center bg-secondary rounded-md w-full mt-4 text-destructive font-semibold">
+              No Leave Request Found
+            </div>
           ) : (
             <LeaveRequestTable data={{ leaveRequests, leaveTypes }} fetchLeaveRequest={fetchLeaveRequest} />
           )}

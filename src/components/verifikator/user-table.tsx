@@ -76,11 +76,11 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
                 ''
               ) : (
                 <AlertDialog>
-                  <AlertDialogTrigger>
-                    <Button variant={"ghost"} className="p-1 h-auto">
-                      <Ellipsis className="size-4"/>
-                    </Button>
-                  </AlertDialogTrigger>
+                    <AlertDialogTrigger>
+                      <Button variant={"ghost"} className="p-1 h-auto" aria-label="Show user actions">
+                        <Ellipsis className="size-4" aria-hidden="true" />
+                      </Button>
+                    </AlertDialogTrigger>
                   <AlertDialogContent>
                     <AlertDialogHeader>
                       <AlertDialogTitle>
