@@ -131,7 +131,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
             <TableCell>
               <Dialog>
                 <DialogTrigger>
-                  <Button variant="ghost" className="p-1.5 h-auto">
+                  <Button variant="ghost" className="p-1 h-auto">
                     <Eye className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>

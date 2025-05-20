@@ -1,17 +1,17 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Edit, Eye, Trash, X } from "lucide-react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
-import { formatDateTime } from "@/lib/utils/formatTimeDate";
+import { useState } from "react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
-import { useState } from "react";
+import { Edit, Eye, Trash, X } from "lucide-react";
+import { formatDateTime } from "@/lib/utils/formatTimeDate";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface LeaveRequestTableProps {
   data: {
@@ -65,6 +65,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
       })
     } catch (error) {
       console.error(error)
+
       toast.error("Error", {
         description: "Failed to cancel leave request",
         style: { 
@@ -86,6 +87,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
       })
     } catch (error) {
       console.error(error)
+
       toast.error("Error", {
         description: "Failed to delete leave request",
         style: { color: 'red' },
@@ -122,6 +124,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
       })
     } catch (error) {
       console.error(error)
+      
       toast.error("Error", {
         description: "Failed to create leave request",
         style: { 
@@ -169,7 +172,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
             <TableCell>
               <Dialog>
                 <DialogTrigger>
-                  <Button variant="ghost" className="p-1.5 h-auto">
+                  <Button variant="ghost" className="p-1 h-auto">
                     <Eye className="h-4 w-4" />
                   </Button>
                 </DialogTrigger>
@@ -236,7 +239,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                       })
                     }
                   >
-                    <Button variant="ghost" className="p-1.5 h-auto">
+                    <Button variant="ghost" className="p-1 h-auto">
                       <Edit className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>

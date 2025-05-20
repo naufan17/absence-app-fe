@@ -1,16 +1,15 @@
+import { useEffect, useState } from "react"
+import type { AxiosResponse } from "axios"
+import axiosInstance from "@/lib/axios"
+import { toast } from "sonner"
 import PrivateGuard from "@/components/guard/private"
 import UserLayout from "@/components/layout/user"
-import { Button } from "@/components/ui/button"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { LeaveRequestTable } from "@/components/user/leave-request"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { LeaveRequestTable } from "@/components/user/leave-request"
-import axiosInstance from "@/lib/axios"
-import { Select } from "@radix-ui/react-select"
-import type { AxiosResponse } from "axios"
-import { useEffect, useState } from "react"
-import { toast } from "sonner"
+import { Button } from "@/components/ui/button"
 
 export default function LeaveRequestPage() {
   const [loading, setLoading] = useState<boolean>(true)
@@ -72,6 +71,7 @@ export default function LeaveRequestPage() {
       })
     } catch (error) {
       console.error(error)
+      
       toast.error("Error", {
         description: "Failed to create leave request",
         style: {
