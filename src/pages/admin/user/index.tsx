@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
+import type { AxiosResponse } from "axios"
+import axiosInstance from "@/lib/axios"
+import { ChevronDown } from "lucide-react"
 import PrivateGuard from "@/components/guard/private"
 import AdminLayout from "@/components/layout/admin"
-import axiosInstance from "@/lib/axios"
-import { Button } from "@/components/ui/button"
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import type { AxiosResponse } from "axios"
 import { UserTable } from "@/components/admin/user-table"
-import { ChevronDown } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export default function UserPage() {
   const [loading, setLoading] = useState<boolean>(true)
@@ -35,6 +36,12 @@ export default function UserPage() {
     }
   }
 
+  const handleSearch = (name: string) => {
+    if (!name) return fetchUsers();
+
+    setUsers(users.filter(user => user.name.toLowerCase().includes(name.toLowerCase())))
+  }
+
   useEffect(() => {
     fetchUsers();
   }, [role])
@@ -44,7 +51,12 @@ export default function UserPage() {
       <AdminLayout>
         <div className="flex flex-col p-4 pt-0 w-full">
           <div className="flex flex-row justify-between">
-            <div></div>
+            <Input 
+              type="search" 
+              placeholder="Find user by name" 
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-1/3 shadow-none placeholder:text-sm" 
+            />
             <div className="space-x-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

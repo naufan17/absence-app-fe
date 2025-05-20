@@ -1,12 +1,13 @@
-import { LeaveRequestTable } from "@/components/admin/leave-request"
-import PrivateGuard from "@/components/guard/private"
-import AdminLayout from "@/components/layout/admin"
-import { Button } from "@/components/ui/button"
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { useEffect, useState } from "react"
 import axiosInstance from "@/lib/axios"
 import type { AxiosResponse } from "axios"
 import { ChevronDown } from "lucide-react"
-import { useEffect, useState } from "react"
+import PrivateGuard from "@/components/guard/private"
+import AdminLayout from "@/components/layout/admin"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { LeaveRequestTable } from "@/components/admin/leave-request"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export default function LeaveRequestPage() {
     const [loading, setLoading] = useState<boolean>(true)
@@ -32,7 +33,7 @@ export default function LeaveRequestPage() {
       setLoading(true)
 
       try {
-        const response: AxiosResponse = await axiosInstance.get('/admin/leave-requests',{
+        const response: AxiosResponse = await axiosInstance.get('/admin/leave-requests', {
           params: {
             status
           }
@@ -44,6 +45,12 @@ export default function LeaveRequestPage() {
         setLoading(false)
       }
     }
+
+    const handleSearch = (name: string) => {
+      if (!name) return fetchLeaveRequest();
+  
+      setLeaveRequests(leaveRequests.filter(leaveRequest => leaveRequest.user.name.toLowerCase().includes(name.toLowerCase())))
+    }
   
     useEffect(() => {
       fetchLeaveRequest()
@@ -54,7 +61,12 @@ export default function LeaveRequestPage() {
       <AdminLayout>
         <div className="flex flex-col p-4 pt-0 w-full">
           <div className="flex flex-row justify-between">
-            <div></div>
+            <Input 
+              type="search" 
+              placeholder="Find user by name" 
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-1/3 shadow-none placeholder:text-sm" 
+            />
             <div className="space-x-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>

@@ -280,7 +280,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                           id="start_date"
                           type="date"
                           name="startDate"
-                          value={leaveRequestsForm.startDate}
+                          value={leaveRequestsForm.startDate.slice(0, 10)}
                           onChange={handleChange}
                         />
                       </div>
@@ -290,7 +290,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                           id="end_date"
                           type="date"
                           name="endDate"
-                          value={leaveRequestsForm.endDate}
+                          value={leaveRequestsForm.endDate.slice(0, 10)}
                           onChange={handleChange}
                         />
                       </div>

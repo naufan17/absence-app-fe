@@ -1,11 +1,11 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "../ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
-import { Ellipsis } from "lucide-react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
+import { Ellipsis } from "lucide-react";
 import { toast } from "sonner";
-import { Button } from "../ui/button";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface UserTableProps {
   data: {
@@ -22,19 +22,24 @@ interface UserTableProps {
 export function UserTable({ data, fetchUsers }: UserTableProps) {
   const handleChangeRole = async (id: string) => {
     try {
-      const response: AxiosResponse = await axiosInstance.put(`/admin/users/${id}/role`,{ 
+      const response: AxiosResponse = await axiosInstance.put(`/admin/users/${id}/role`, { 
         role: "verifikator"
       });
 
       toast.success("Success", {
         description: response.data.message,
-        style: { color: 'green' },
+        style: { 
+          color: 'green' 
+        },
       })
     } catch (error) {
       console.error(error);
+      
       toast.error("Error", {
         description: "Failed to change role",
-        style: { color: 'red' },
+        style: { 
+          color: 'red' 
+        },
       })
     } finally {
       fetchUsers();
