@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
+import { Link } from "react-router-dom";
 import { ReceiptText, User } from "lucide-react";
 import { CardOverview } from "@/components/card-overview";
 import PrivateGuard from "@/components/guard/private"
@@ -76,12 +77,16 @@ export default function DashboardPage() {
             {isLoading ? (
               <div className="flex h-30 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
             ) : (
-              <CardOverview index={1} title="User" value={user.total} description="Total user" icon={User} />
+              <Link to="/verifikator/user">
+                <CardOverview index={1} title="User" value={user.total} description="Total user" icon={User} />
+              </Link>
             )}
             {isLoading ? (
               <div className="flex h-30 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
             ) : (
-              <CardOverview index={2} title="Leave Request" value={leaveRequest.total} description="Total leave request" icon={ReceiptText} />              
+              <Link to="/verifikator/leave-request">
+                <CardOverview index={2} title="Leave Request" value={leaveRequest.total} description="Total leave request" icon={ReceiptText} />              
+              </Link>
             )}
           </div>
           <div className="grid auto-rows-min gap-4 md:grid-cols-2">
