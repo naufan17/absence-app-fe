@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react"
+import type { AxiosResponse } from "axios"
+import axiosInstance from "@/lib/axios"
 import PrivateGuard from "@/components/guard/private"
 import VerifikatorLayout from "@/components/layout/verifikator"
-import { UserTable } from "@/components/verifikator/user-table"
-import axiosInstance from "@/lib/axios"
-import type { AxiosResponse } from "axios"
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
-import { Button } from "@/components/ui/button"
 import { ChevronDown } from "lucide-react"
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { UserTable } from "@/components/verifikator/user-table"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 
 export default function UserPage() {
   const [loading, setLoading] = useState<boolean>(true)
@@ -35,6 +36,12 @@ export default function UserPage() {
     }
   }
 
+  const handleSearch = (name: string) => {
+    if (!name) return fetchUsers();
+
+    setUsers(users.filter(user => user.name.toLowerCase().includes(name.toLowerCase())))
+  }
+
   useEffect(() => {
     fetchUsers();
   }, [isVerified])
@@ -44,7 +51,12 @@ export default function UserPage() {
       <VerifikatorLayout>
         <div className="flex flex-col p-4 pt-0 w-full">
           <div className="flex flex-row justify-between">
-            <div></div>
+            <Input 
+              type="search" 
+              placeholder="Find user by name" 
+              onChange={(e) => handleSearch(e.target.value)}
+              className="w-1/3 shadow-none placeholder:text-sm" 
+            />
             <div className="space-x-2">
                 <DropdownMenu>
                 <DropdownMenuTrigger asChild>

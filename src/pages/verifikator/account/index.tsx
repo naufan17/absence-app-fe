@@ -1,8 +1,8 @@
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import PrivateGuard from "@/components/guard/private"
 import VerifikatorLayout from "@/components/layout/verifikator"
 import UpdateProfileForm from "@/components/update-profile-form"
 import UpdatePasswordForm from "@/components/update-password-form"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 export default function AccountPage() {
   return (

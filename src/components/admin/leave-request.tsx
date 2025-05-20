@@ -31,7 +31,7 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>User</TableHead>
+          <TableHead>Name</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Start Date</TableHead>
           <TableHead>End Date</TableHead>

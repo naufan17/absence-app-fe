@@ -1,11 +1,11 @@
+import type { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
+import { Check, Ellipsis, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Check, Ellipsis, X } from "lucide-react";
-import { Button } from "../ui/button";
-import { toast } from "sonner";
-import axiosInstance from "@/lib/axios";
-import type { AxiosResponse } from "axios";
+import { Button } from "@/components/ui/button";
 
 interface UserTableProps {
   data: {
@@ -26,19 +26,23 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
 
       toast.success("Success", {
         description: response.data.message,
-        style: { color: 'green' },
+        style: { 
+          color: 'green' 
+        },
       })
     } catch (error) {
       console.error(error);
+      
       toast.error("Error", {
         description: "Failed to verify user",
-        style: { color: 'red' },
+        style: { 
+          color: 'red' 
+        },
       })
     } finally {
       fetchUsers();
     }
   }
-
 
   return (
     <div className="rounded-md border w-full mt-4">
@@ -47,7 +51,7 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
         <TableRow>
           <TableHead>Name</TableHead>
           <TableHead>Email</TableHead>
-          <TableHead>Is Verified</TableHead>
+          <TableHead>Verified</TableHead>
           <TableHead>Action</TableHead>
         </TableRow>
       </TableHeader>

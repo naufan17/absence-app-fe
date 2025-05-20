@@ -1,16 +1,16 @@
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
-import { formatDateTime } from "@/lib/utils/formatTimeDate";
-import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "../ui/dialog";
-import { Button } from "../ui/button";
-import { Eye, SendHorizontal } from "lucide-react";
-import { Input } from "../ui/input";
-import { Label } from "../ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useState } from "react";
-import { toast } from "sonner";
-import axiosInstance from "@/lib/axios";
 import type { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axios";
+import { toast } from "sonner";
+import { Eye, SendHorizontal } from "lucide-react";
+import { formatDateTime } from "@/lib/utils/formatTimeDate";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Badge } from "@/components/ui/badge";
 
 interface LeaveRequestTableProps {
   data: {
@@ -48,7 +48,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
       value: 'revoked', 
       label: 'Revoked' 
     }]);
-    const [reply, setReply] = useState<{
+    const [replyForm, setReplyForm] = useState<{
       id: string,
       comment: string,
       status: string
@@ -59,30 +59,19 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      const { name, value } = e.target;
-
-      switch (name) {
-        case 'id':
-          setReply({ ...reply, id: value });
-          break;
-        case 'comment':
-          setReply({ ...reply, comment: value });
-          break;
-        case 'status':
-          setReply({ ...reply, status: value });
-          break;
-        default:
-          break;
-      }
-    }
+      setReplyForm({
+        ...replyForm,
+        [e.target.name]: e.target.value
+      });
+    };
   
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       
       try {
-        const response: AxiosResponse = await axiosInstance.put(`/verifikator/leave-requests/${reply.id}/reply`, { 
-          comment: reply.comment, 
-          status: reply.status 
+        const response: AxiosResponse = await axiosInstance.put(`/verifikator/leave-requests/${replyForm.id}/reply`, { 
+          comment: replyForm.comment, 
+          status: replyForm.status 
         });
 
         toast.success("Success", {
@@ -109,11 +98,11 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>User</TableHead>
+          <TableHead>Name</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Start Date</TableHead>
           <TableHead>End Date</TableHead>
-          <TableHead>Leave Type</TableHead>
+          <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Action</TableHead>
         </TableRow>
@@ -201,7 +190,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                     <Button
                       variant="ghost"
                       className="p-1 h-auto cursor-pointer"
-                      onClick={() => setReply({ id: leaveReq.id, comment: '', status: '' })}
+                      onClick={() => setReplyForm({ id: leaveReq.id, comment: '', status: '' })}
                     >
                       <SendHorizontal className="h-4 w-4"/>
                     </Button>
@@ -222,7 +211,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                             id="id"
                             type="hidden"
                             name="id"
-                            value={reply.id}
+                            value={replyForm.id}
                             readOnly
                           />
                           <Label htmlFor="comment">Comment</Label>
@@ -230,7 +219,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                             id="comment"
                             type="text"
                             name="comment"
-                            value={reply.comment}
+                            value={replyForm.comment}
                             onChange={handleInputChange}
                             required
                           /> 
@@ -239,8 +228,8 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                           <Label htmlFor="status">Status</Label>
                           <Select
                             name="status"
-                            value={reply.status}
-                            onValueChange={(value) => setReply({ ...reply, status: value })}
+                            value={replyForm.status}
+                            onValueChange={(value) => setReplyForm({ ...replyForm, status: value })}
                             required
                           >
                             <SelectTrigger id="status">
