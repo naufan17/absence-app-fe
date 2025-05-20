@@ -76,8 +76,8 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
           <form onSubmit={handleSubmit(onSubmit)}>
             <div className="grid gap-6">
               {error &&
-                <Alert variant="destructive" className="mb-4">
-                  <AlertCircle className="h-4 w-4 -mt-1" />
+                <Alert variant="destructive" className="border-destructive">
+                  <AlertCircle className="h-4 w-4" />
                   <AlertTitle className="mb-0 tracking-normal">
                     {error}
                   </AlertTitle>

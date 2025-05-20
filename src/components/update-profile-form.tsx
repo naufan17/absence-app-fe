@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import type { AxiosResponse } from "axios";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { useDispatch, useSelector } from "react-redux";
+import type { AppDispatch, RootState } from "@/lib/store/store";
 import { toast } from "sonner";
 import { AlertCircle } from "lucide-react";
 import axiosInstance from "@/lib/axios";
@@ -24,13 +26,14 @@ type FormData = z.infer<typeof formSchema>;
 export default function UpdateProfileForm() {
   const [loading, setLoading] = useState<boolean>(true);
   const [error] = useState<string | null>(null);
-  const [user, setUser] = useState<{ name: string, email: string }>({ name: "", email: "" });
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) });
+  const profile = useSelector((state: RootState) => state.profile.profile)
+  const dispatch = useDispatch<AppDispatch>()
 
   const getProfile = async () => {
     try {
       const response: AxiosResponse = await axiosInstance.get('/account/profile');
-      setUser(response.data.data);
+      dispatch(setProfile(response.data.data))
     } catch (error: any) {
       console.error("Fetch profile failed: ", error.response);
     } finally {
@@ -63,7 +66,6 @@ export default function UpdateProfileForm() {
         },
       })
     } finally {
-      getProfile();
       setLoading(false);
     }
   };
@@ -96,7 +98,7 @@ export default function UpdateProfileForm() {
               <Input 
                 id="name" 
                 type="text" 
-                defaultValue={user.name}
+                defaultValue={profile?.name}
                 {...register("name")}
                 className="shadow-none"
               />
@@ -111,7 +113,7 @@ export default function UpdateProfileForm() {
               <Input 
                 id="email" 
                 type="email" 
-                defaultValue={user.email}
+                defaultValue={profile?.email}
                 {...register("email")}
                 className="shadow-none"
               />

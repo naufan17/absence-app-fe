@@ -75,7 +75,7 @@ export default function UserPage() {
                       setIsVerified(checked ? true : undefined);
                     }}
                   >
-                  Is Verified
+                  Verified
                   </DropdownMenuCheckboxItem>
                     <DropdownMenuCheckboxItem
                       checked={isVerified === false}

@@ -98,9 +98,19 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+
+    let formattedValue = value;
+
+    if (name === 'startDate') {
+      formattedValue = value + 'T00:00:00.000Z';
+    } else if (name === 'endDate') {
+      formattedValue = value + 'T23:59:00.000Z';
+    }
+
     setLeaveRequestsForm({
       ...leaveRequestsForm,
-      [e.target.name]: e.target.value
+      [name]: formattedValue
     })
   }
   
@@ -111,8 +121,8 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
       const response: AxiosResponse = await axiosInstance.put(`/user/leave-requests/${leaveRequestsForm.id}`, {
         title: leaveRequestsForm.title,
         description: leaveRequestsForm.description,
-        startDate: leaveRequestsForm.startDate + 'T00:00:00.000Z',
-        endDate: leaveRequestsForm.endDate + 'T23:59:00.000Z',
+        startDate: leaveRequestsForm.startDate,
+        endDate: leaveRequestsForm.endDate,
         leaveTypeId: leaveRequestsForm.leaveTypeId
       })
 

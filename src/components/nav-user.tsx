@@ -9,12 +9,13 @@ import { setLogout } from "@/lib/store/slices/auth.slice"
 import type { AppDispatch, RootState } from "@/lib/store/store"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
+import { setProfile } from "@/lib/store/slices/profile.slice"
 
 export function NavUser() {
-  const role = useSelector((state: RootState) => state.auth.role)
   const [loading, setLoading] = useState<boolean>(true)
-  const [user, setUser] = useState<{ name: string; email: string; }>({ name: "", email: "" })
   const [avatar] = useState<string>("/images/avatar.png")
+  const role = useSelector((state: RootState) => state.auth.role)
+  const profile = useSelector((state: RootState) => state.profile.profile)
   const dispatch = useDispatch<AppDispatch>()
   const navigate = useNavigate()
   const { isMobile } = useSidebar()
@@ -28,8 +29,7 @@ export function NavUser() {
   const getProfile = async () => {
     try {
       const response = await axiosInstance.get("/account/profile")
-
-      setUser(response.data.data)
+      dispatch(setProfile(response.data.data))
     } catch (error: any) {
       console.error("Fetch profile failed: ", error.response?.data.message)
     } finally {
@@ -54,12 +54,12 @@ export function NavUser() {
                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
               >
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={avatar} alt={user.name} />
+                  <AvatarImage src={avatar} alt={profile?.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">{profile?.name}</span>
+                  <span className="truncate text-xs">{profile?.email}</span>
                 </div>
                 <ChevronsUpDown className="ml-auto size-4" />
               </SidebarMenuButton>
@@ -74,12 +74,12 @@ export function NavUser() {
             <DropdownMenuLabel className="p-0 font-normal">
               <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                 <Avatar className="h-8 w-8 rounded-lg">
-                  <AvatarImage src={avatar} alt={user.name} />
+                  <AvatarImage src={avatar} alt={profile?.name} />
                   <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                 </Avatar>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-medium">{user.name}</span>
-                  <span className="truncate text-xs">{user.email}</span>
+                  <span className="truncate font-medium">{profile?.name}</span>
+                  <span className="truncate text-xs">{profile?.email}</span>
                 </div>
               </div>
             </DropdownMenuLabel>
