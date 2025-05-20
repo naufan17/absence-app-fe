@@ -51,15 +51,15 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
             <TableCell>{leaveReq.leave_type.name}</TableCell>
             <TableCell>
               {leaveReq.status === "pending" ? (
-                <Badge className="bg-yellow-500 text-sm">Pending</Badge>
+                <Badge className="bg-yellow-500">Pending</Badge>
               ) : leaveReq.status === "canceled" ? (
-                <Badge className="bg-red-500 text-sm">Canceled</Badge>
+                <Badge className="bg-red-500">Canceled</Badge>
               ) : leaveReq.status === "revoked" ? (
-                <Badge className="bg-orange-500 text-sm">Revoked</Badge>
+                <Badge className="bg-orange-500">Revoked</Badge>
               ) : leaveReq.status === "approved" ? (
-                <Badge className="bg-green-500 text-sm">Approved</Badge>
+                <Badge className="bg-green-500">Approved</Badge>
               ) : leaveReq.status === "rejected" ? (
-                <Badge className="bg-red-500 text-sm">Rejected</Badge>
+                <Badge className="bg-red-500">Rejected</Badge>
               ) : null}
             </TableCell>
             <TableCell>
@@ -96,15 +96,15 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
                           <div className="font-medium">Status:</div>
                           <div className="col-span-3 capitalize">
                             {leaveReq.status === "pending" ? (
-                              <Badge className="bg-yellow-500">Pending</Badge>
+                              <Badge className="bg-yellow-500 text-sm">Pending</Badge>
                             ) : leaveReq.status === "canceled" ? (
-                              <Badge className="bg-red-500">Canceled</Badge>
+                              <Badge className="bg-red-500 text-sm">Canceled</Badge>
                             ) : leaveReq.status === "revoked" ? (
-                              <Badge className="bg-orange-500">Revoked</Badge>
+                              <Badge className="bg-orange-500 text-sm">Revoked</Badge>
                             ) : leaveReq.status === "approved" ? (
-                              <Badge className="bg-green-500">Approved</Badge>
+                              <Badge className="bg-green-500 text-sm">Approved</Badge>
                             ) : leaveReq.status === "rejected" ? (
-                              <Badge className="bg-red-500">Rejected</Badge>
+                              <Badge className="bg-red-500 text-sm">Rejected</Badge>
                             ) : null}
                           </div>
                           {leaveReq.comment && (

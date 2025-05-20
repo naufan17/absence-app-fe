@@ -85,7 +85,7 @@ export function LoginForm({
                     className="shadow-none"
                     required
                   />
-                  {errors.email && <span className="text-red-500">{errors.email.message}</span>}
+                  {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
                 </div> 
                 <div className="grid gap-3">
                   <Label htmlFor="password">Password</Label>
@@ -97,7 +97,7 @@ export function LoginForm({
                     className="shadow-none"
                     required 
                   />
-                  {errors.password && <span className="text-red-500">{errors.password.message}</span>}
+                  {errors.password && <span className="text-red-500 text-sm">{errors.password.message}</span>}
                 </div>
                 <Button type="submit" className="w-full cursor-pointer">
                   {loading ? (

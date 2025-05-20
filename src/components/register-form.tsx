@@ -97,7 +97,7 @@ export function RegisterForm({
                     className="shadow-none"
                     required
                   />
-                  {errors.name && <p className="text-red-500">{errors.name.message}</p>}
+                  {errors.name && <p className="text-red-500 text-sm">{errors.name.message}</p>}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="email">Email</Label>
@@ -109,7 +109,7 @@ export function RegisterForm({
                     className="shadow-none"
                     required
                   />
-                  {errors.email && <p className="text-red-500">{errors.email.message}</p>}
+                  {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="password">Password</Label>
@@ -121,7 +121,7 @@ export function RegisterForm({
                     className="shadow-none"
                     required 
                   />
-                  {errors.password && <p className="text-red-500">{errors.password.message}</p>}
+                  {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="confirmPassword">Confirm Password</Label>
@@ -133,7 +133,7 @@ export function RegisterForm({
                     className="shadow-none"
                     required 
                   />
-                  {errors.confirmPassword && <p className="text-red-500">{errors.confirmPassword.message}</p>}
+                  {errors.confirmPassword && <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>}
                 </div>
                 <Button type="submit" className="w-full cursor-pointer">
                   {loading ? (

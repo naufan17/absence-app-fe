@@ -9,11 +9,23 @@ import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { toast } from "sonner";
+
+const formSchema = z.object({
+  name: z.string().min(2),
+  email: z.string().email(),
+});
+
+type FormData = z.infer<typeof formSchema>;
 
 export default function UpdateProfileForm() {
   const [loading, setLoading] = useState<boolean>(true);
   const [user, setUser] = useState<{ name: string, email: string }>({ name: "", email: "" });
   const [error] = useState<string | null>(null);
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
   const getProfile = async () => {
     try {
@@ -23,6 +35,36 @@ export default function UpdateProfileForm() {
     } catch (error: any) {
       console.error("Fetch profile failed: ", error.response);
     } finally {
+      setLoading(false);
+    }
+  };
+
+  const onSubmit = async (data: FormData) => {
+    setLoading(true);
+
+    try {
+      const reposne: AxiosResponse = await axiosInstance.post('/account/update-profile', {
+        name: data.name,
+        email: data.email
+      });
+
+      toast.success("Success", {
+        description: reposne.data.message,
+        style: { 
+          color: 'green' 
+        },
+      })
+    } catch (error: any) {
+      console.error("Update profile failed: ", error.response);
+
+      toast.error("Error", {
+        description: error.response?.data.message,
+        style: { 
+          color: 'red' 
+        },
+      })
+    } finally {
+      getProfile();
       setLoading(false);
     }
   };
@@ -45,7 +87,7 @@ export default function UpdateProfileForm() {
           <AlertCircle className="h-4 w-4 -mt-1" />
           <AlertTitle className="mb-0 tracking-normal">{error}</AlertTitle>
         </Alert>}
-      <form>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <div className="space-y-6">
           <div className="grid gap-2">
             <Label htmlFor="name">Name</Label>
@@ -56,11 +98,11 @@ export default function UpdateProfileForm() {
                 id="name" 
                 type="text" 
                 defaultValue={user.name}
-                placeholder={user.name}
-                value={user.name}
+                {...register("name")}
                 className="shadow-none"
-              />               
+              />
             )}
+            {errors.name && <span className="text-red-500 text-sm">{errors.name.message}</span>}
           </div>
           <div className="grid gap-2">
             <Label htmlFor="email">Email</Label>
@@ -71,11 +113,11 @@ export default function UpdateProfileForm() {
                 id="email" 
                 type="email" 
                 defaultValue={user.email}
-                placeholder={user.email}
-                value={user.email}
+                {...register("email")}
                 className="shadow-none"
               />
             )}
+            {errors.email && <span className="text-red-500 text-sm">{errors.email.message}</span>}
           </div>
           <Button 
             type="submit" 
