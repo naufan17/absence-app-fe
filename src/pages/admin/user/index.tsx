@@ -8,6 +8,12 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { UserTable } from "@/components/admin/user-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { Dialog, DialogClose } from "@radix-ui/react-dialog"
+import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { Select } from "@radix-ui/react-select"
+import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { toast } from "sonner"
 
 export default function UserPage() {
   const [loading, setLoading] = useState<boolean>(true)
@@ -18,6 +24,19 @@ export default function UserPage() {
     email: string
     role: string
   }>>([])
+  const [userForm, setUserForm] = useState<{
+    name: string
+    email: string
+    password: string
+    confirmPassword: string
+    role: string
+  }>({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+    role: "user"
+  })
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -34,6 +53,39 @@ export default function UserPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    try {
+      const response: AxiosResponse = await axiosInstance.post('/admin/users', userForm);
+
+      toast.success("Success", {
+        description: response.data.message,
+        style: {
+          color: 'green'
+        },
+      })
+    } catch (error) {
+      console.error(error);
+
+      toast.error("Error", {
+        description: "Failed to create user",
+        style: {
+          color: 'red'
+        },
+      })
+    } finally {
+      fetchUsers();
+    }
+  }
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setUserForm({
+      ...userForm,
+      [e.target.name]: e.target.value
+    })
   }
 
   const handleSearch = (name: string) => {
@@ -87,6 +139,91 @@ export default function UserPage() {
                   </DropdownMenuCheckboxItem>
                 </DropdownMenuContent>
               </DropdownMenu>
+              <Dialog>
+                <DialogTrigger>
+                  <Button variant="default">
+                    Add User
+                  </Button>
+                </DialogTrigger>
+                <DialogContent>
+                  <form onSubmit={handleSubmit}>
+                    <DialogHeader>
+                      <DialogTitle>
+                        Add New User
+                      </DialogTitle>
+                      <DialogDescription>
+                        Make your user account here. Click save when you're done.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-6 mt-6">
+                      <div className="grid gap-2">
+                        <Label htmlFor="name">Name</Label>
+                        <Input 
+                          id="name" 
+                          type="text"
+                          name="name"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="email">Email</Label>
+                        <Input 
+                          id="email" 
+                          type="email"
+                          name="email"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="password">Password</Label>
+                        <Input 
+                          id="password" 
+                          type="password"
+                          name="password"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="confirmPassword">Confirm Password</Label>
+                        <Input 
+                          id="confirmPassword" 
+                          type="password"
+                          name="confirmPassword"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="role">Role</Label>
+                        <Select
+                          name="role"
+                          onValueChange={(value: string) =>
+                            setUserForm({
+                              ...userForm,
+                              role: value
+                            })
+                          }
+                          value={userForm.role}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Select a role" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="user">User</SelectItem>
+                            <SelectItem value="verifikator">Verifikator</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                    <DialogFooter>
+                      <DialogClose>
+                        <Button type="submit" className="mt-6">
+                          Save
+                        </Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </form>
+                </DialogContent>
+              </Dialog>
             </div>
           </div>
           {loading ? (
