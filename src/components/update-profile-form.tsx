@@ -2,17 +2,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react";
 import type { AxiosResponse } from "axios";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
 import axiosInstance from "@/lib/axios";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { toast } from "sonner";
 
 const formSchema = z.object({
   name: z.string().min(2),
@@ -23,15 +23,14 @@ type FormData = z.infer<typeof formSchema>;
 
 export default function UpdateProfileForm() {
   const [loading, setLoading] = useState<boolean>(true);
-  const [user, setUser] = useState<{ name: string, email: string }>({ name: "", email: "" });
   const [error] = useState<string | null>(null);
+  const [user, setUser] = useState<{ name: string, email: string }>({ name: "", email: "" });
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) });
 
   const getProfile = async () => {
     try {
       const response: AxiosResponse = await axiosInstance.get('/account/profile');
       setUser(response.data.data);
-      console.log(response.data.data);
     } catch (error: any) {
       console.error("Fetch profile failed: ", error.response);
     } finally {

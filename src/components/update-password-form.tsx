@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
+import type { AxiosResponse } from "axios";
+import axiosInstance from "@/lib/axios";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { toast } from "sonner";
+import { AlertCircle } from "lucide-react";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { Separator } from "@/components/ui/separator";
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
-import { z } from "zod";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import type { AxiosResponse } from "axios";
-import axiosInstance from "@/lib/axios";
-import { toast } from "sonner";
 
 const formSchema = z.object({
   password: z.string().min(10),

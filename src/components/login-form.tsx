@@ -1,21 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/button"
+import type { AxiosResponse } from "axios"
+import axiosInstance from "@/lib/axios"
+import { Link } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { useDispatch } from "react-redux"
+import { z } from "zod"
+import { AlertCircle } from "lucide-react"
+import { setLogin } from "@/lib/store/slices/auth.slice"
+import { zodResolver } from "@hookform/resolvers/zod"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { useDispatch } from "react-redux"
 import type { AppDispatch } from "@/lib/store/store"
-import type { AxiosResponse } from "axios"
-import axiosInstance from "@/lib/axios"
-import { setLogin } from "@/lib/store/slices/auth.slice"
-import { Alert, AlertTitle } from "./ui/alert"
-import { AlertCircle } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Alert, AlertTitle } from "@/components/ui/alert"
+import { Button } from "@/components/ui/button"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -24,16 +24,11 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-export function LoginForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const dispatch = useDispatch<AppDispatch>()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-  })
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) })
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)

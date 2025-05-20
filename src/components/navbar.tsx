@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom";
-import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
-import { GalleryVerticalEnd } from "lucide-react";
 import { useSelector } from "react-redux";
+import { GalleryVerticalEnd } from "lucide-react";
 import type { RootState } from "@/lib/store/store";
+import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
 
 export function Navbar() {
   const isAuthenticated: boolean = useSelector((state: RootState) => state.auth.isAuthenticated);

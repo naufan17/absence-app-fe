@@ -1,19 +1,19 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useState } from "react"
+import type { AxiosResponse } from "axios"
+import axiosInstance from "@/lib/axios"
+import { useNavigate } from "react-router-dom"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { cn } from "@/lib/utils"
+import { AlertCircle } from "lucide-react"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { z } from "zod"
-import { useForm } from "react-hook-form"
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useNavigate } from "react-router-dom"
-import { toast } from "sonner"
-import axiosInstance from "@/lib/axios"
-import type { AxiosResponse } from "axios"
-import { Alert, AlertTitle } from "./ui/alert"
-import { AlertCircle } from "lucide-react"
-import { useState } from "react"
+import { Alert, AlertTitle } from "@/components/ui/alert"
 
 const formSchema = z.object({
   name: z.string().min(2),
@@ -24,15 +24,10 @@ const formSchema = z.object({
 
 type FormData = z.infer<typeof formSchema>
 
-export function RegisterForm({
-  className,
-  ...props
-}: React.ComponentProps<"div">) {
+export function RegisterForm({ className, ...props }: React.ComponentProps<"div">) {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(formSchema),
-  })
+  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) })
   const navigate = useNavigate();
 
   const onSubmit = async (data: FormData) => {
@@ -48,7 +43,9 @@ export function RegisterForm({
 
       toast.success("Success", {
         description: reponse.data.message,
-        style: { color: 'green' },
+        style: { 
+          color: 'green' 
+        },
         action: {
           label: 'Login',
           onClick: () => {

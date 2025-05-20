@@ -1,37 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
-
-import {
-  BadgeCheck,
-  ChevronsUpDown,
-  LogOut,
-} from "lucide-react"
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarImage,
-} from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuGroup,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from "@/components/ui/sidebar"
-import { Link, useNavigate } from "react-router-dom"
 import { useEffect, useState } from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { useDispatch, useSelector } from "react-redux"
+import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react"
+import axiosInstance from "@/lib/axios"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { setLogout } from "@/lib/store/slices/auth.slice"
 import type { AppDispatch, RootState } from "@/lib/store/store"
-import { useDispatch, useSelector } from "react-redux"
-import axiosInstance from "@/lib/axios"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
+import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
 
 export function NavUser() {
   const role = useSelector((state: RootState) => state.auth.role)
