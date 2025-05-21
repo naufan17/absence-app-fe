@@ -9,12 +9,19 @@ import { Button } from "@/components/ui/button";
 
 interface UserTableProps {
   data: {
-   users: {
-    id: string;
-    name: string;
-    email: string;
-    is_verified: string;
-   }[];
+    users: {
+      id: string;
+      name: string;
+      email: string;
+      is_verified: boolean;
+   }[],
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalData: number;
+      totalPage: number;
+    }
   };
   fetchUsers: () => Promise<void>; 
 }

@@ -13,12 +13,19 @@ import { Label } from "@/components/ui/label";
 
 interface UserTableProps {
   data: {
-   users: {
-    id: string;
-    name: string;
-    email: string;
-    role: string
-   }[] 
+    users: {
+      id: string;
+      name: string;
+      email: string;
+      role: string
+   }[],
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalData: number;
+      totalPage: number;
+    }
   };
   fetchUsers: () => Promise<void>
 }

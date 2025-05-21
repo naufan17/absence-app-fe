@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react"
 import type { AxiosResponse } from "axios"
 import axiosInstance from "@/lib/axios"
+import { toast } from "sonner"
 import { ChevronDown } from "lucide-react"
 import PrivateGuard from "@/components/guard/private"
 import AdminLayout from "@/components/layout/admin"
@@ -13,17 +14,35 @@ import { DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTit
 import { Label } from "@/components/ui/label"
 import { Select } from "@radix-ui/react-select"
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { toast } from "sonner"
+import { PaginationTable } from "@/components/pagination-table"
 
 export default function UserPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const [role, setRole] = useState<string>()
-  const [users, setUsers] = useState<Array<{
-    id: string
-    name: string
-    email: string
-    role: string
-  }>>([])
+  const [dataUsers, setDataUsers] = useState<{
+    users: {
+      id: string
+      name: string
+      email: string
+      role: string
+    }[],
+    meta: {
+      page: number
+      limit: number
+      total: number
+      totalData: number
+      totalPage: number
+    }
+  }>({
+    users: [],
+    meta: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalData: 0,
+      totalPage: 0
+    }
+  })
   const [userForm, setUserForm] = useState<{
     name: string
     email: string
@@ -38,16 +57,17 @@ export default function UserPage() {
     role: "user"
   })
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page?: number) => {
     setLoading(true);
     
     try {
       const response: AxiosResponse = await axiosInstance.get('/admin/users', {
         params: {
-          role
+          role,
+          page: page? page : dataUsers.meta.page,
         }
       });
-      setUsers(response.data.data);
+      setDataUsers(response.data.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -91,7 +111,10 @@ export default function UserPage() {
   const handleSearch = (name: string) => {
     if (!name) return fetchUsers();
 
-    setUsers(users.filter(user => user.name.toLowerCase().includes(name.toLowerCase())))
+    setDataUsers(prev => ({
+      ...prev,
+      users: prev.users.filter(user => user.name.toLowerCase().includes(name.toLowerCase()))
+    }))
   }
 
   useEffect(() => {
@@ -228,12 +251,15 @@ export default function UserPage() {
           </div>
           {loading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
-          ) : users.length === 0 ? (
+          ) : dataUsers.users.length === 0 ? (
             <div className="flex h-32 items-center justify-center bg-secondary rounded-md w-full mt-4 text-destructive font-semibold">
               No User Found
             </div>
           ) : (
-            <UserTable data={{ users }} fetchUsers={fetchUsers} />
+            <>
+              <UserTable data={dataUsers} fetchUsers={fetchUsers} />
+              <PaginationTable data={dataUsers.meta} fetchData={fetchUsers} />
+            </>
           )}
         </div>      
       </AdminLayout>

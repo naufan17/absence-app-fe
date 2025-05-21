@@ -8,27 +8,48 @@ import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMe
 import { UserTable } from "@/components/verifikator/user-table"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { PaginationTable } from "@/components/pagination-table"
 
 export default function UserPage() {
   const [loading, setLoading] = useState<boolean>(true)
   const [isVerified, setIsVerified] = useState<boolean>()
-  const [users, setUsers] = useState<Array<{
-    id: string
-    name: string
-    email: string
-    is_verified: string
-  }>>([])
+  const [dataUsers, setDataUsers] = useState<{
+    users: {
+      id: string
+      name: string
+      email: string
+      role: string
+      is_verified: boolean
+    }[],
+    meta: {
+      page: number
+      limit: number
+      total: number
+      totalData: number
+      totalPage: number
+    }
+  }>({
+    users: [],
+    meta: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalData: 0,
+      totalPage: 0
+    }
+  })
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (page?: number) => {
     setLoading(true);
 
     try {
       const response: AxiosResponse = await axiosInstance.get('/verifikator/users', { 
         params: { 
-          isVerified 
+          isVerified,
+          page: page? page : dataUsers.meta.page,
         } 
       });
-      setUsers(response.data.data);
+      setDataUsers(response.data.data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -39,7 +60,10 @@ export default function UserPage() {
   const handleSearch = (name: string) => {
     if (!name) return fetchUsers();
 
-    setUsers(users.filter(user => user.name.toLowerCase().includes(name.toLowerCase())))
+    setDataUsers(prev => ({
+      ...prev,
+      users: prev.users.filter(user => user.name.toLowerCase().includes(name.toLowerCase()))
+    }))
   }
 
   useEffect(() => {
@@ -91,12 +115,15 @@ export default function UserPage() {
           </div>
           {loading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
-          ) : users.length === 0 ? (
+          ) : dataUsers.users.length === 0 ? (
             <div className="flex h-32 items-center justify-center bg-secondary rounded-md w-full mt-4 text-destructive font-semibold">
               No User Found
             </div>
           ) : (
-            <UserTable data={{ users }} fetchUsers={fetchUsers} />
+            <>
+              <UserTable data={dataUsers} fetchUsers={fetchUsers} />
+              <PaginationTable data={dataUsers.meta} fetchData={fetchUsers} />
+            </>
           )}
         </div>  
       </VerifikatorLayout>

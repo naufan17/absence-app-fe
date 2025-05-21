@@ -21,7 +21,14 @@ interface LeaveRequestTableProps {
       },
       status: string,
       comment: string | null
-    }[];
+    }[],
+    meta: {
+      page: number;
+      limit: number;
+      total: number;
+      totalData: number;
+      totalPage: number;
+    }
   };
 }
 

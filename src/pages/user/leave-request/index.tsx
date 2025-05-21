@@ -10,22 +10,41 @@ import { LeaveRequestTable } from "@/components/user/leave-request"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { PaginationTable } from "@/components/pagination-table"
 
 export default function LeaveRequestPage() {
   const [loading, setLoading] = useState<boolean>(true)
-  const [leaveRequests, setLeaveRequests] = useState<Array<{
-    id: string
-    title: string
-    description: string
-    start_date: string
-    end_date: string
-    leave_type: {
-      id: string
-      name: string
-    },
-    status: string,
-    comment: string | null
-  }>>([])
+  const [leaveRequestsData, setLeaveRequestsData] = useState<{
+    leaveRequests: {
+      id: string;
+      title: string;
+      description: string;
+      start_date: string;
+      end_date: string;
+      leave_type: {
+        id: string;
+        name: string;
+      },
+      status: string,
+      comment: string | null
+    }[],
+    meta: {
+      page: number
+      limit: number
+      total: number
+      totalData: number
+      totalPage: number
+    }
+  }>({
+    leaveRequests: [],
+    meta: {
+      page: 1,
+      limit: 20,
+      total: 0,
+      totalData: 0,
+      totalPage: 0
+    }
+  })
   const [leaveTypes, setLeaveTypes] = useState<Array<{
     id: string
     name: string
@@ -83,10 +102,15 @@ export default function LeaveRequestPage() {
     }
   }
 
-  const fetchLeaveRequest = async () => {
+  const fetchLeaveRequest = async (page?: number) => {
     try {
-      const response: AxiosResponse = await axiosInstance.get('/user/leave-requests')
-      setLeaveRequests(response.data.data)
+      const response: AxiosResponse = await axiosInstance.get('/user/leave-requests', {
+        params: {
+          page: page ? page : leaveRequestsData.meta.page,
+        }
+      })
+
+      setLeaveRequestsData(response.data.data)
     } catch (error) {
       console.error(error)
     } finally {
@@ -209,12 +233,21 @@ export default function LeaveRequestPage() {
           </div>
           {loading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
-          ) : leaveRequests.length === 0 ? (
+          ) : leaveRequestsData.leaveRequests.length === 0 ? (
             <div className="flex h-32 items-center justify-center bg-secondary rounded-md w-full mt-4 text-destructive font-semibold">
               No Leave Request Found
             </div>
           ) : (
-            <LeaveRequestTable data={{ leaveRequests, leaveTypes }} fetchLeaveRequest={fetchLeaveRequest} />
+            <>
+              <LeaveRequestTable
+                data={{ leaveRequests: leaveRequestsData.leaveRequests, 
+                  meta: leaveRequestsData.meta, 
+                  leaveTypes 
+                }}
+                fetchLeaveRequest={fetchLeaveRequest}
+              />
+              <PaginationTable data={leaveRequestsData.meta} fetchData={fetchLeaveRequest} />
+            </>
           )}
         </div>  
       </UserLayout>
