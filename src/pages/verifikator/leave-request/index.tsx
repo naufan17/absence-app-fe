@@ -77,7 +77,7 @@ export default function LeaveRequestPage() {
   }
 
   useEffect(() => {
-    fetchLeaveRequest()
+    fetchLeaveRequest(1)
   }, [status])
 
   return (

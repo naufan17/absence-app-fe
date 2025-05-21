@@ -16,7 +16,7 @@ export function Heroes() {
             Absence is a simple and easy to use absence management system.
           </p>
           <button className="bg-primary text-primary-foreground shadow hover:bg-primary/90 py-2 md:py-2.5 px-5 md:px-6 mt-6 md:mt-8 rounded-full">
-            <Link to="https://github.com/naufan17/next-shadcn-boilerplate" className="inline-flex items-center font-medium text-[13px] md:text-[15px]">
+            <Link to="https://github.com/naufan17/absence-app-fe" className="inline-flex items-center font-medium text-[13px] md:text-[15px]">
               Get Started
             </Link>
           </button>

@@ -117,7 +117,7 @@ export default function UserPage() {
   }
 
   useEffect(() => {
-    fetchUsers();
+    fetchUsers(1);
   }, [role])
 
   return (

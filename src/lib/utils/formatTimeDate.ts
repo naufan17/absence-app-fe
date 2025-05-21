@@ -1,11 +1,20 @@
-export const formatDateTime = (date: string) => {
+export const formatDate = (date: string) => {
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
-    hour: "numeric",
-    minute: "numeric",
-    second: "numeric",
+    timeZone: "UTC",
+  };
+  
+  return new Date(date).toLocaleString("id", options);
+}
+
+export const formatTime = (date: string) => {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: false,
     timeZone: "UTC",
   };
   

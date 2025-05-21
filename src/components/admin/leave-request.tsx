@@ -1,5 +1,5 @@
 import { Eye } from "lucide-react";
-import { formatDateTime } from "@/lib/utils/formatTimeDate";
+import { formatDate, formatTime } from "@/lib/utils/formatTimeDate";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
@@ -41,7 +41,9 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
           <TableHead>Name</TableHead>
           <TableHead>Title</TableHead>
           <TableHead>Start Date</TableHead>
+          <TableHead>Start Time</TableHead>
           <TableHead>End Date</TableHead>
+          <TableHead>End Time</TableHead>
           <TableHead>Type</TableHead>
           <TableHead>Status</TableHead>
           <TableHead>Action</TableHead>
@@ -52,8 +54,10 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
           <TableRow key={leaveReq.id} className="py-2">
             <TableCell>{leaveReq.user.name}</TableCell>
             <TableCell>{leaveReq.title}</TableCell>
-            <TableCell>{formatDateTime(leaveReq.start_date)}</TableCell>
-            <TableCell>{formatDateTime(leaveReq.end_date)}</TableCell>
+            <TableCell>{formatDate(leaveReq.start_date)}</TableCell>
+            <TableCell>{formatTime(leaveReq.start_date)}</TableCell>
+            <TableCell>{formatDate(leaveReq.end_date)}</TableCell>
+            <TableCell>{formatTime(leaveReq.end_date)}</TableCell>
             <TableCell>{leaveReq.leave_type.name}</TableCell>
             <TableCell>
               {leaveReq.status === "pending" ? (
@@ -94,9 +98,13 @@ export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
                           <div className="font-medium">Description:</div>
                           <div className="col-span-3">{leaveReq.description}</div>
                           <div className="font-medium">Start Date:</div>
-                          <div className="col-span-3">{formatDateTime(leaveReq.start_date)}</div>
+                          <div className="col-span-3">{formatDate(leaveReq.start_date)}</div>
+                          <div className="font-medium">Start Time:</div>
+                          <div className="col-span-3">{formatTime(leaveReq.start_date)}</div>
                           <div className="font-medium">End Date:</div>
-                          <div className="col-span-3">{formatDateTime(leaveReq.end_date)}</div>
+                          <div className="col-span-3">{formatDate(leaveReq.end_date)}</div>
+                          <div className="font-medium">End Time:</div>
+                          <div className="col-span-3">{formatTime(leaveReq.end_date)}</div>
                           <div className="font-medium">Type:</div>
                           <div className="col-span-3">{leaveReq.leave_type.name}</div>
                           <div className="font-medium">Status:</div>
