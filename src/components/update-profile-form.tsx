@@ -45,13 +45,12 @@ export default function UpdateProfileForm() {
     setLoading(true);
 
     try {
-      const reposne: AxiosResponse = await axiosInstance.post('/account/update-profile', {
+      const response: AxiosResponse = await axiosInstance.post('/account/update-profile', {
         name: data.name,
         email: data.email
       });
 
-      toast.success("Success", {
-        description: reposne.data.message,
+      toast.success(response.data.message, {
         style: { 
           color: 'green' 
         },
@@ -59,8 +58,7 @@ export default function UpdateProfileForm() {
     } catch (error: any) {
       console.error("Update profile failed: ", error.response);
 
-      toast.error("Error", {
-        description: error.response?.data.message,
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },

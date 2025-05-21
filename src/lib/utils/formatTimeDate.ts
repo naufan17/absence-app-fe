@@ -8,5 +8,6 @@ export const formatDateTime = (date: string) => {
     second: "numeric",
     timeZone: "UTC",
   };
-  return new Date(date).toLocaleString(undefined, options);
+  
+  return new Date(date).toLocaleString("id", options);
 }

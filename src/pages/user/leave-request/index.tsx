@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
 import type { AxiosResponse } from "axios"
 import axiosInstance from "@/lib/axios"
@@ -7,10 +8,10 @@ import UserLayout from "@/components/layout/user"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { LeaveRequestTable } from "@/components/user/leave-request"
+import { PaginationTable } from "@/components/pagination-table"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
-import { PaginationTable } from "@/components/pagination-table"
 
 export default function LeaveRequestPage() {
   const [loading, setLoading] = useState<boolean>(true)
@@ -53,13 +54,17 @@ export default function LeaveRequestPage() {
     title: string
     description: string
     startDate: string
+    startTime: string
     endDate: string
+    endTime: string
     leaveTypeId: string
   }>({
     title: '',
     description: '',
     startDate: '',
+    startTime: '',
     endDate: '',
+    endTime: '',
     leaveTypeId: ''
   })
 
@@ -77,22 +82,20 @@ export default function LeaveRequestPage() {
       const response: AxiosResponse = await axiosInstance.post('/user/leave-requests', {
         title: leaveRequestsForm.title,
         description: leaveRequestsForm.description,
-        startDate: leaveRequestsForm.startDate + 'T00:00:00.000Z',
-        endDate: leaveRequestsForm.endDate + 'T23:59:00.000Z',
+        startDate: leaveRequestsForm.startDate + 'T' + leaveRequestsForm.startTime + ':00.000Z',
+        endDate: leaveRequestsForm.endDate + 'T' + leaveRequestsForm.endTime + ':00.000Z',
         leaveTypeId: leaveRequestsForm.leaveTypeId
       })
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: {
           color: 'green'
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       
-      toast.error("Error", {
-        description: "Failed to create leave request",
+      toast.error(error.response?.data.message, {
         style: {
           color: 'red'
         },
@@ -103,6 +106,8 @@ export default function LeaveRequestPage() {
   }
 
   const fetchLeaveRequest = async (page?: number) => {
+    setLoading(true)
+    
     try {
       const response: AxiosResponse = await axiosInstance.get('/user/leave-requests', {
         params: {
@@ -147,11 +152,11 @@ export default function LeaveRequestPage() {
                     Add Leave Request
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="overflow-auto max-h-[90vh]">
                   <form onSubmit={handleSubmit}>
                     <DialogHeader>
                       <DialogTitle>
-                        Update Leave Request
+                        Create Leave Request
                       </DialogTitle>
                       <DialogDescription>
                         Make your changes here. Click save when you're done.
@@ -186,11 +191,29 @@ export default function LeaveRequestPage() {
                         />
                       </div>
                       <div className="grid gap-2">
+                        <Label htmlFor="startTime">Start Time</Label>
+                        <Input 
+                          id="startTime"
+                          type="time"
+                          name="startTime"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
                         <Label htmlFor="endDate">End Date</Label>
                         <Input 
                           id="endDate"
                           type="date"
                           name="endDate"
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="endTime">End Time</Label>
+                        <Input 
+                          id="endTime"
+                          type="time"
+                          name="endTime"
                           onChange={handleChange}
                         />
                       </div>

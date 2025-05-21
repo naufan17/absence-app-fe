@@ -1,4 +1,4 @@
-import * as React from "react"
+import { useMemo } from "react"
 import { Label, Pie, PieChart } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import type { ChartConfig } from "@/components/ui/chart"
@@ -25,7 +25,7 @@ const getChartData = (user: UserData) => [
 ]
 
 export function PieChartUser({ user }: PieChartComponentProps) {
-  const chartData = React.useMemo(() => getChartData(user), [user])
+  const chartData = useMemo(() => getChartData(user), [user])
 
   return (
     <Card className="flex flex-col">

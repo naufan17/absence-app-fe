@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
@@ -31,17 +32,15 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
     try {
       const response: AxiosResponse = await axiosInstance.put(`/verifikator/users/${id}/verify`);
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: { 
           color: 'green' 
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       
-      toast.error("Error", {
-        description: "Failed to verify user",
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },

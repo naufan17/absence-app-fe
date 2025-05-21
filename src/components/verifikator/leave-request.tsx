@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
@@ -81,17 +82,15 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
           status: replyForm.status 
         });
 
-        toast.success("Success", {
-          description: response.data.message,
+        toast.success(response.data.message, {
           style: { 
             color: 'green' 
           },
         })
-      } catch (error) {
+      } catch (error: any) {
         console.error(error);
 
-        toast.error("Error", {
-          description: "Failed to reply leave request",
+        toast.error(error.response?.data.message, {
           style: { 
             color: 'red' 
           },
@@ -231,7 +230,6 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                             name="comment"
                             value={replyForm.comment}
                             onChange={handleInputChange}
-                            required
                           /> 
                         </div>
                         <div className="grid gap-2">
@@ -240,7 +238,6 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                             name="status"
                             value={replyForm.status}
                             onValueChange={(value) => setReplyForm({ ...replyForm, status: value })}
-                            required
                           >
                             <SelectTrigger id="status">
                               <SelectValue placeholder="Select a status" />

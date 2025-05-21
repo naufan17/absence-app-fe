@@ -34,8 +34,7 @@ export default function UpdatePasswordForm() {
         confirmPassword: data.confirmPassword
       })
 
-      toast.success("Success", {
-        description: reponse.data.message,
+      toast.success(reponse.data.message, {
         style: { 
           color: 'green' 
         },
@@ -43,8 +42,7 @@ export default function UpdatePasswordForm() {
     } catch (error: any) {
       console.error("Update password failed: ", error.response);
 
-      toast.error("Error", {
-        description: error.response?.data.message,
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },

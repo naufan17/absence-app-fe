@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
 import type { AxiosResponse } from "axios"
 import axiosInstance from "@/lib/axios"
@@ -54,7 +55,7 @@ export default function UserPage() {
     email: "",
     password: "",
     confirmPassword: "",
-    role: "user"
+    role: ""
   })
 
   const fetchUsers = async (page?: number) => {
@@ -81,17 +82,15 @@ export default function UserPage() {
     try {
       const response: AxiosResponse = await axiosInstance.post('/admin/users', userForm);
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: {
           color: 'green'
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
 
-      toast.error("Error", {
-        description: "Failed to create user",
+      toast.error(error.response?.data.message, {
         style: {
           color: 'red'
         },
@@ -240,7 +239,7 @@ export default function UserPage() {
                     <DialogFooter>
                       <DialogClose>
                         <Button type="submit" className="mt-6">
-                          Save
+                          Save changes
                         </Button>
                       </DialogClose>
                     </DialogFooter>

@@ -41,8 +41,7 @@ export function RegisterForm({ className, ...props }: React.ComponentProps<"div"
         confirmPassword: data.confirmPassword
       });
 
-      toast.success("Success", {
-        description: reponse.data.message,
+      toast.success(reponse.data.message, {
         style: { 
           color: 'green' 
         },

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
@@ -49,14 +50,18 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     title: string
     description: string
     startDate: string
+    startTime: string
     endDate: string
+    endTime: string
     leaveTypeId: string
   }>({
     id: '',
     title: '',
     description: '',
     startDate: '',
+    startTime: '',
     endDate: '',
+    endTime: '',
     leaveTypeId: ''
   })
 
@@ -64,17 +69,15 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     try {
       const response: AxiosResponse = await axiosInstance.put(`/user/leave-requests/${id}/cancel`)
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: { 
           color: 'green' 
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
 
-      toast.error("Error", {
-        description: "Failed to cancel leave request",
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },
@@ -88,15 +91,13 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     try {
       const response: AxiosResponse = await axiosInstance.delete(`/user/leave-requests/${id}`)
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: { color: 'green' },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
 
-      toast.error("Error", {
-        description: "Failed to delete leave request",
+      toast.error(error.response?.data.message, {
         style: { color: 'red' },
       })
     } finally {
@@ -107,18 +108,22 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
 
-    let formattedValue = value;
+    setLeaveRequestsForm(prev => {
+      if (name === 'startDate' || name === 'endDate') {
+        const time = prev[name].slice(11, 16) || '00:00';
 
-    if (name === 'startDate') {
-      formattedValue = value + 'T00:00:00.000Z';
-    } else if (name === 'endDate') {
-      formattedValue = value + 'T23:59:00.000Z';
-    }
+        return { ...prev, [name]: `${value}T${time}:00.000Z` };
+      }
+      if (name === 'startTime' || name === 'endTime') {
+        const dateKey = name === 'startTime' ? 'startDate' : 'endDate';
+        const date = prev[dateKey].slice(0, 10) || '';
 
-    setLeaveRequestsForm({
-      ...leaveRequestsForm,
-      [name]: formattedValue
-    })
+        if (date) return { ...prev, [dateKey]: `${date}T${value}:00.000Z` };
+        return prev;
+      }
+      
+      return { ...prev, [name]: value };
+    });
   }
   
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -133,17 +138,15 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
         leaveTypeId: leaveRequestsForm.leaveTypeId
       })
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: { 
           color: 'green' 
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       
-      toast.error("Error", {
-        description: "Failed to create leave request",
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },
@@ -251,7 +254,9 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                         title: leaveReq.title,
                         description: leaveReq.description,
                         startDate: leaveReq.start_date,
+                        startTime: leaveReq.start_date,
                         endDate: leaveReq.end_date,
+                        endTime: leaveReq.end_date,
                         leaveTypeId: leaveReq.leave_type.id,
                       })
                     }
@@ -260,7 +265,7 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                       <Edit className="h-4 w-4" />
                     </Button>
                   </DialogTrigger>
-                  <DialogContent>
+                  <DialogContent className="overflow-auto max-h-[90vh]">
                     <DialogHeader>
                       <DialogTitle>Edit Leave Request</DialogTitle>
                       <DialogDescription>
@@ -305,12 +310,32 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
                         />
                       </div>
                       <div className="grid gap-2">
+                        <Label htmlFor="start_time">Start Time</Label>
+                        <Input
+                          id="start_time"
+                          type="time"
+                          name="startTime"
+                          value={leaveRequestsForm.startDate.slice(11, 16)}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
                         <Label htmlFor="end_date">End Date</Label>
                         <Input
                           id="end_date"
                           type="date"
                           name="endDate"
                           value={leaveRequestsForm.endDate.slice(0, 10)}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="grid gap-2">
+                        <Label htmlFor="end_time">End Time</Label>
+                        <Input
+                          id="end_time"
+                          type="time"
+                          name="endTime"
+                          value={leaveRequestsForm.endDate.slice(11, 16)}
                           onChange={handleChange}
                         />
                       </div>

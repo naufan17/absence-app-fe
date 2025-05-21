@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import type { AxiosResponse } from "axios";
 import axiosInstance from "@/lib/axios";
@@ -34,9 +35,11 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
   const [resetPasswordForm, setResetPasswordForm] = useState<{
     id: string;
     password: string;
+    confirmPassword: string;
   }>({
     id: "",
     password: "",
+    confirmPassword: "",
   });
 
   const handleChangeRole = async (id: string) => {
@@ -45,17 +48,15 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
         role: "verifikator"
       });
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: { 
           color: 'green' 
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       
-      toast.error("Error", {
-        description: "Failed to change role",
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },
@@ -71,20 +72,18 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
     try {
       const response: AxiosResponse = await axiosInstance.put(`/admin/users/${resetPasswordForm.id}/reset-password`, { 
         password: resetPasswordForm.password,
-        confirmPassword: resetPasswordForm.password
+        confirmPassword: resetPasswordForm.confirmPassword
       });
 
-      toast.success("Success", {
-        description: response.data.message,
+      toast.success(response.data.message, {
         style: { 
           color: 'green' 
         },
       })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
       
-      toast.error("Error", {
-        description: "Failed to reset password",
+      toast.error(error.response?.data.message, {
         style: { 
           color: 'red' 
         },
@@ -138,6 +137,7 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
                       setResetPasswordForm({
                         id: user.id,
                         password: "",
+                        confirmPassword: "",
                       })
                     }}
                     >
@@ -168,7 +168,6 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
                           type="password"
                           name="password"
                           onChange={handleInputChange}
-                          required
                         />
                       </div>
                       <div className="grid gap-2">
@@ -178,7 +177,6 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
                           type="password"
                           name="confirmPassword"
                           onChange={handleInputChange}
-                          required
                         />
                       </div>
                     </div>

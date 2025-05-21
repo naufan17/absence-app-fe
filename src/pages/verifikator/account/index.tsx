@@ -3,6 +3,7 @@ import VerifikatorLayout from "@/components/layout/verifikator"
 import UpdateProfileForm from "@/components/update-profile-form"
 import UpdatePasswordForm from "@/components/update-password-form"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Separator } from "@/components/ui/separator"
 
 export default function AccountPage() {
   return (
@@ -17,7 +18,7 @@ export default function AccountPage() {
               Manage your account settings
             </h5>
           </div>
-          {/* <Separator/> */}
+          <Separator/>
           <div className="p-2 md:p-4">
             <Tabs defaultValue="profile" className="max-w-screen-md">
               <TabsList className="grid w-60 grid-cols-2 mb-6">
