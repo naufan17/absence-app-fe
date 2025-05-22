@@ -5,11 +5,11 @@ import { useDispatch, useSelector } from "react-redux"
 import { BadgeCheck, ChevronsUpDown, LogOut } from "lucide-react"
 import axiosInstance from "@/lib/axios"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { setLogout } from "@/lib/store/slices/auth.slice"
-import type { AppDispatch, RootState } from "@/lib/store/store"
+import { setLogout } from "@/store/slices/auth.slice"
+import type { AppDispatch, RootState } from "@/store/store"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuGroup, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from "@/components/ui/sidebar"
-import { setProfile } from "@/lib/store/slices/profile.slice"
+import { setProfile } from "@/store/slices/profile.slice"
 
 export function NavUser() {
   const [loading, setLoading] = useState<boolean>(true)

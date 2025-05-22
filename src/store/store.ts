@@ -4,8 +4,8 @@ import { combineReducers } from 'redux'
 import { persistStore, persistReducer, type Persistor } from 'redux-persist'
 import { encryptTransform } from 'redux-persist-transform-encrypt'
 import storage from 'redux-persist/lib/storage'
-import authSlice from './slices/auth.slice'
-import profileSlice from './slices/profile.slice'
+import authSlice from '@/store/slices/auth.slice'
+import profileSlice from '@/store/slices/profile.slice'
 
 const persistConfig: {
   key: string

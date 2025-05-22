@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { GalleryVerticalEnd } from "lucide-react";
-import type { RootState } from "@/lib/store/store";
+import type { RootState } from "@/store/store";
 import { NavigationMenu, NavigationMenuItem, NavigationMenuList } from "@/components/ui/navigation-menu";
 
 export function Navbar() {

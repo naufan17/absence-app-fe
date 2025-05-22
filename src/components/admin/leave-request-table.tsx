@@ -1,5 +1,6 @@
 import { Eye } from "lucide-react";
-import { formatDate, formatTime } from "@/lib/utils/formatTimeDate";
+import { formatDate } from "@/utils/formatDate";
+import { formatTime } from "@/utils/formatTime";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";

@@ -1,4 +1,4 @@
-import type { RootState } from "@/lib/store/store";
+import type { RootState } from "@/store/store";
 import { useEffect } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";

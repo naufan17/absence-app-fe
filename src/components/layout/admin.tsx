@@ -1,6 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import { useSelector } from "react-redux"
-import type { RootState } from "@/lib/store/store"
+import type { RootState } from "@/store/store"
 import { GalleryVerticalEnd, User, ReceiptText, House } from "lucide-react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbSeparator } from "@/components/ui/breadcrumb"

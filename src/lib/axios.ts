@@ -1,6 +1,6 @@
 import Axios, { type AxiosInstance } from 'axios';
-import { store } from './store/store';
-import { setLogout } from './store/slices/auth.slice';
+import { store } from '@/store/store';
+import { setLogout } from '@/store/slices/auth.slice';
 
 const axiosInstance: AxiosInstance = Axios.create({
   baseURL: import.meta.env.VITE_API_URL,
