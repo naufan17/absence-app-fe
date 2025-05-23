@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import type { AxiosResponse } from "axios";
-import axiosInstance from "@/lib/axios";
 import { Edit, Ellipsis } from "lucide-react";
 import { toast } from "sonner";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -11,6 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useChangeRole } from "@/hooks/use-change-role.user";
+import { useResetPassword } from "@/hooks/use-reset-password";
+import { DialogClose } from "@radix-ui/react-dialog";
 
 interface UserTableProps {
   data: {
@@ -28,10 +30,11 @@ interface UserTableProps {
       totalPage: number;
     }
   };
-  fetchUsers: () => Promise<void>
 }
 
-export function UserTable({ data, fetchUsers }: UserTableProps) {
+export function UserTable({ data }: UserTableProps) {
+  const changeRole = useChangeRole();
+  const resetPassword = useResetPassword();
   const [resetPasswordForm, setResetPasswordForm] = useState<{
     id: string;
     password: string;
@@ -43,54 +46,50 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
   });
 
   const handleChangeRole = async (id: string) => {
-    try {
-      const response: AxiosResponse = await axiosInstance.put(`/admin/users/${id}/role`, { 
-        role: "verifikator"
-      });
-
-      toast.success(response.data.message, {
-        style: { 
-          color: 'green' 
-        },
-      })
-    } catch (error: any) {
-      console.error(error);
-      
-      toast.error(error.response?.data.message, {
-        style: { 
-          color: 'red' 
-        },
-      })
-    } finally {
-      fetchUsers();
-    }
+    changeRole.mutate({
+      id,
+      role: "verifikator"
+    }, {
+      onSuccess: (response: AxiosResponse) => {
+        toast.success(response.data.message, {
+          style: { 
+            color: 'green' 
+          },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: { 
+            color: 'red' 
+          },
+        })
+      }
+    });
   }
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const response: AxiosResponse = await axiosInstance.put(`/admin/users/${resetPasswordForm.id}/reset-password`, { 
-        password: resetPasswordForm.password,
-        confirmPassword: resetPasswordForm.confirmPassword
-      });
-
-      toast.success(response.data.message, {
-        style: { 
-          color: 'green' 
-        },
-      })
-    } catch (error: any) {
-      console.error(error);
-      
-      toast.error(error.response?.data.message, {
-        style: { 
-          color: 'red' 
-        },
-      })
-    } finally {
-      fetchUsers();
-    }
+    resetPassword.mutate({
+      id: resetPasswordForm.id,
+      password: resetPasswordForm.password,
+      confirmPassword: resetPasswordForm.confirmPassword
+    }, {
+      onSuccess: (response: AxiosResponse) => {
+        toast.success(response.data.message, {
+          style: { 
+            color: 'green' 
+          },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: { 
+            color: 'red' 
+          },
+        })
+      }
+    });
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -181,9 +180,11 @@ export function UserTable({ data, fetchUsers }: UserTableProps) {
                       </div>
                     </div>
                     <DialogFooter>
-                      <Button type="submit" className="mt-6">
-                        Save changes
-                      </Button>
+                      <DialogClose>
+                        <Button type="submit" className="mt-6">
+                          Save changes
+                        </Button>
+                      </DialogClose>
                     </DialogFooter>
                   </form>
                 </DialogContent>

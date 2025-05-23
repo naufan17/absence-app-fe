@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import type { AxiosResponse } from "axios";
-import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
 import { Edit, Eye, Trash, X } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
@@ -14,6 +13,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { useUpdateLeaveRequest } from "@/hooks/use-update-leave-request";
+import { useCancelLeaveRequest } from "@/hooks/use-cancel-leave-request";
+import { useDeleteLeaveRequest } from "@/hooks/use-delete-leave-request";
 
 interface LeaveRequestTableProps {
   data: {
@@ -42,10 +44,9 @@ interface LeaveRequestTableProps {
       name: string;
     }[],
   };
-  fetchLeaveRequest: () => Promise<void>
 }
 
-export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTableProps) {
+export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
   const [leaveRequestsForm, setLeaveRequestsForm] = useState<{
     id: string
     title: string
@@ -65,45 +66,38 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     endTime: '',
     leaveTypeId: ''
   })
+  const updateLeaveRequest = useUpdateLeaveRequest();
+  const cancelLeaveRequest = useCancelLeaveRequest();
+  const deleteLeaveRequest = useDeleteLeaveRequest();
 
   const handleCancel = async (id: string) => {
-    try {
-      const response: AxiosResponse = await axiosInstance.put(`/user/leave-requests/${id}/cancel`)
-
-      toast.success(response.data.message, {
-        style: { 
-          color: 'green' 
-        },
-      })
-    } catch (error: any) {
-      console.error(error)
-
-      toast.error(error.response?.data.message, {
-        style: { 
-          color: 'red' 
-        },
-      })
-    } finally {
-      fetchLeaveRequest();
-    }
+    cancelLeaveRequest.mutate(id, {
+      onSuccess: (response: AxiosResponse) => {
+        toast.success(response.data.message, {
+          style: { color: 'green' },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: { color: 'red' },
+        })
+      }
+    })
   }
 
     const handleDelete = async (id: string) => {
-    try {
-      const response: AxiosResponse = await axiosInstance.delete(`/user/leave-requests/${id}`)
-
-      toast.success(response.data.message, {
-        style: { color: 'green' },
-      })
-    } catch (error: any) {
-      console.error(error)
-
-      toast.error(error.response?.data.message, {
-        style: { color: 'red' },
-      })
-    } finally {
-      fetchLeaveRequest();
-    }
+    deleteLeaveRequest.mutate(id, {
+      onSuccess: (response: AxiosResponse) => {
+        toast.success(response.data.message, {
+          style: { color: 'green' },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: { color: 'red' },
+        })
+      }
+    })
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -130,31 +124,25 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    try {
-      const response: AxiosResponse = await axiosInstance.put(`/user/leave-requests/${leaveRequestsForm.id}`, {
-        title: leaveRequestsForm.title,
-        description: leaveRequestsForm.description,
-        startDate: leaveRequestsForm.startDate,
-        endDate: leaveRequestsForm.endDate,
-        leaveTypeId: leaveRequestsForm.leaveTypeId
-      })
-
-      toast.success(response.data.message, {
-        style: { 
-          color: 'green' 
-        },
-      })
-    } catch (error: any) {
-      console.error(error)
-      
-      toast.error(error.response?.data.message, {
-        style: { 
-          color: 'red' 
-        },
-      })
-    } finally {
-      fetchLeaveRequest()
-    }
+    updateLeaveRequest.mutate({
+      id: leaveRequestsForm.id,
+      title: leaveRequestsForm.title,
+      description: leaveRequestsForm.description,
+      startDate: leaveRequestsForm.startDate,
+      endDate: leaveRequestsForm.endDate,
+      leaveTypeId: leaveRequestsForm.leaveTypeId
+    }, {
+      onSuccess: (resonse: AxiosResponse) => {
+        toast.success(resonse.data.message, {
+          style: { color: 'green' },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: { color: 'red' },
+        })
+      }
+    })
   }
 
   return (

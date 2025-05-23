@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
-import type { AxiosResponse } from "axios";
-import axiosInstance from "@/lib/axios";
+// import type { AxiosResponse } from "axios";
+// import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
 import { Eye, SendHorizontal } from "lucide-react";
 import { formatDate } from "@/utils/formatDate";
@@ -13,6 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { useReplyLeaveRequest } from "@/hooks/use-reply-leave-request";
+import type { AxiosResponse } from "axios";
 
 interface LeaveRequestTableProps {
   data: {
@@ -39,10 +41,10 @@ interface LeaveRequestTableProps {
       totalPage: number;
     }
   };
-  fetchLeaveRequest: () => Promise<void>;
 }
 
-export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTableProps) {
+export function LeaveRequestTable({ data }: LeaveRequestTableProps) {
+  const replyLeaveRequest = useReplyLeaveRequest();
   const [statusOptions] = useState<{ 
     value: string; 
     label: string 
@@ -56,50 +58,50 @@ export function LeaveRequestTable({ data, fetchLeaveRequest }: LeaveRequestTable
     }, { 
       value: 'revoked', 
       label: 'Revoked' 
-    }]);
-    const [replyForm, setReplyForm] = useState<{
-      id: string,
-      comment: string,
-      status: string
-    }>({
-      id: '',
-      comment: '',
-      status: ''
+    }]
+  );
+  const [replyForm, setReplyForm] = useState<{
+    id: string,
+    comment: string,
+    status: 'approved' | 'rejected' | 'revoked' | string
+  }>({
+    id: '',
+    comment: '',
+    status: ''
+  });
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setReplyForm({
+      ...replyForm,
+      [e.target.name]: e.target.value
     });
+  };
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setReplyForm({
-        ...replyForm,
-        [e.target.name]: e.target.value
-      });
-    };
-  
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      
-      try {
-        const response: AxiosResponse = await axiosInstance.put(`/verifikator/leave-requests/${replyForm.id}/reply`, { 
-          comment: replyForm.comment, 
-          status: replyForm.status 
-        });
-
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    
+    replyLeaveRequest.mutate({
+      id: replyForm.id,
+      comment: replyForm.comment,
+      status: replyForm.status
+    }, {
+      onSuccess: (response: AxiosResponse) => {
         toast.success(response.data.message, {
           style: { 
             color: 'green' 
           },
-        })
-      } catch (error: any) {
+        });
+      },
+      onError: (error: any) => {
         console.error(error);
-
         toast.error(error.response?.data.message, {
           style: { 
             color: 'red' 
           },
-        })
-      } finally {
-        fetchLeaveRequest();
+        });
       }
-    }
+    });
+  }
 
   return (
     <div className="rounded-md border w-full mt-4">

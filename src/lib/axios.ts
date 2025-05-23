@@ -33,7 +33,6 @@ axiosInstance.interceptors.response.use(
       error.response?.data.message === 'jwt signature is required'
     ) {
       store.dispatch(setLogout())
-      localStorage.removeItem('accessToken')
       window.location.href = '/login'
     }
 

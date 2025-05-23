@@ -10,7 +10,7 @@ interface PaginationProps {
     totalData: number;
     totalPage: number;
   };
-  fetchData: (page: number) => Promise<void>;
+  fetchData: (page: number) => void;
 }
 
 export function PaginationTable({ data, fetchData }: PaginationProps) {

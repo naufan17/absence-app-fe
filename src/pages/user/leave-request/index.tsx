@@ -1,8 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from "react"
-import type { AxiosResponse } from "axios"
+import { useSelector } from "react-redux"
 import axiosInstance from "@/lib/axios"
 import { toast } from "sonner"
+import { useLeaveRequest } from "@/hooks/use-leave-request"
+import { useCreateLeaveRequest } from "@/hooks/use-create-leave-request"
 import PrivateGuard from "@/components/guard/private"
 import UserLayout from "@/components/layout/user"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -12,40 +14,13 @@ import { PaginationTable } from "@/components/pagination-table"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import type { RootState } from "@/store/store"
 
 export default function LeaveRequestPage() {
-  const [loading, setLoading] = useState<boolean>(true)
-  const [leaveRequestsData, setLeaveRequestsData] = useState<{
-    leaveRequests: {
-      id: string;
-      title: string;
-      description: string;
-      start_date: string;
-      end_date: string;
-      leave_type: {
-        id: string;
-        name: string;
-      },
-      status: string,
-      comment: string | null
-    }[],
-    meta: {
-      page: number
-      limit: number
-      total: number
-      totalData: number
-      totalPage: number
-    }
-  }>({
-    leaveRequests: [],
-    meta: {
-      page: 1,
-      limit: 20,
-      total: 0,
-      totalData: 0,
-      totalPage: 0
-    }
-  })
+  const role: string | null = useSelector((state: RootState) => state.auth.role);  
+  const [page, setPage] = useState<number>(1)
+  const { data, isLoading } = useLeaveRequest(role as string, status, page)
+  const crateLeaveRequest = useCreateLeaveRequest()  
   const [leaveTypes, setLeaveTypes] = useState<Array<{
     id: string
     name: string
@@ -78,49 +53,29 @@ export default function LeaveRequestPage() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
-    try {
-      const response: AxiosResponse = await axiosInstance.post('/user/leave-requests', {
-        title: leaveRequestsForm.title,
-        description: leaveRequestsForm.description,
-        startDate: leaveRequestsForm.startDate + 'T' + leaveRequestsForm.startTime + ':00.000Z',
-        endDate: leaveRequestsForm.endDate + 'T' + leaveRequestsForm.endTime + ':00.000Z',
-        leaveTypeId: leaveRequestsForm.leaveTypeId
-      })
-
-      toast.success(response.data.message, {
-        style: {
-          color: 'green'
-        },
-      })
-    } catch (error: any) {
-      console.error(error)
-      
-      toast.error(error.response?.data.message, {
-        style: {
-          color: 'red'
-        },
-      })
-    } finally {
-      fetchLeaveRequest()
-    }
-  }
-
-  const fetchLeaveRequest = async (page?: number) => {
-    setLoading(true)
-    
-    try {
-      const response: AxiosResponse = await axiosInstance.get('/user/leave-requests', {
-        params: {
-          page: page ? page : leaveRequestsData.meta.page,
-        }
-      })
-
-      setLeaveRequestsData(response.data.data)
-    } catch (error) {
-      console.error(error)
-    } finally {
-      setLoading(false)
-    }
+    crateLeaveRequest.mutate({
+      title: leaveRequestsForm.title,
+      description: leaveRequestsForm.description,
+      startDate: leaveRequestsForm.startDate + 'T' + leaveRequestsForm.startTime + ':00.000Z',
+      endDate: leaveRequestsForm.endDate + 'T' + leaveRequestsForm.endTime + ':00.000Z',
+      leaveTypeId: leaveRequestsForm.leaveTypeId,
+      reason: leaveRequestsForm.description
+    }, {
+      onSuccess: () => {
+        toast.success('Leave request created successfully', {
+          style: {
+            color: 'green'
+          },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: {
+            color: 'red'
+          },
+        })
+      }
+    })
   }
 
   const fetchLeaveType = async () => {
@@ -129,13 +84,10 @@ export default function LeaveRequestPage() {
       setLeaveTypes(response.data.data)
     } catch (error) {
       console.error(error)
-    } finally {
-      setLoading(false)
     }
   }
 
   useEffect(() => {
-    fetchLeaveRequest()
     fetchLeaveType()
   }, [])
 
@@ -254,22 +206,22 @@ export default function LeaveRequestPage() {
               </Dialog>
             </div>
           </div>
-          {loading ? (
+          {isLoading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
-          ) : leaveRequestsData.leaveRequests.length === 0 ? (
+          ) : data.leaveRequests.length === 0 ? (
             <div className="flex h-32 items-center justify-center bg-secondary rounded-md w-full mt-4 text-destructive font-semibold">
               No Leave Request Found
             </div>
           ) : (
             <>
               <LeaveRequestTable
-                data={{ leaveRequests: leaveRequestsData.leaveRequests, 
-                  meta: leaveRequestsData.meta, 
+                data={{ 
+                  leaveRequests: data.leaveRequests, 
+                  meta: data.meta, 
                   leaveTypes 
                 }}
-                fetchLeaveRequest={fetchLeaveRequest}
               />
-              <PaginationTable data={leaveRequestsData.meta} fetchData={fetchLeaveRequest} />
+              <PaginationTable data={data.meta} fetchData={setPage} />
             </>
           )}
         </div>  

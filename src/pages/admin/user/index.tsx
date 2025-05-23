@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import type { AxiosResponse } from "axios"
-import axiosInstance from "@/lib/axios"
 import { toast } from "sonner"
 import { ChevronDown } from "lucide-react"
 import PrivateGuard from "@/components/guard/private"
@@ -16,34 +15,17 @@ import { Label } from "@/components/ui/label"
 import { Select } from "@radix-ui/react-select"
 import { SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { PaginationTable } from "@/components/pagination-table"
+import { useSelector } from "react-redux"
+import type { RootState } from "@/store/store"
+import { useUser } from "@/hooks/use-user"
+import { useCreateUser } from "@/hooks/use-create-user"
 
 export default function UserPage() {
-  const [loading, setLoading] = useState<boolean>(true)
-  const [role, setRole] = useState<string>()
-  const [dataUsers, setDataUsers] = useState<{
-    users: {
-      id: string
-      name: string
-      email: string
-      role: string
-    }[],
-    meta: {
-      page: number
-      limit: number
-      total: number
-      totalData: number
-      totalPage: number
-    }
-  }>({
-    users: [],
-    meta: {
-      page: 1,
-      limit: 20,
-      total: 0,
-      totalData: 0,
-      totalPage: 0
-    }
-  })
+  const role: string | null = useSelector((state: RootState) => state.auth.role);  
+  const [roleOption, setRoleOption] = useState<string>()
+  const [page , setPage] = useState<number>(1)
+  const { data, isLoading } = useUser(role as string, undefined, roleOption, page)
+  const createUser = useCreateUser()
   const [userForm, setUserForm] = useState<{
     name: string
     email: string
@@ -58,46 +40,31 @@ export default function UserPage() {
     role: ""
   })
 
-  const fetchUsers = async (page?: number) => {
-    setLoading(true);
-    
-    try {
-      const response: AxiosResponse = await axiosInstance.get('/admin/users', {
-        params: {
-          role,
-          page: page? page : dataUsers.meta.page,
-        }
-      });
-      setDataUsers(response.data.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  }
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    try {
-      const response: AxiosResponse = await axiosInstance.post('/admin/users', userForm);
-
-      toast.success(response.data.message, {
-        style: {
-          color: 'green'
-        },
-      })
-    } catch (error: any) {
-      console.error(error);
-
-      toast.error(error.response?.data.message, {
-        style: {
-          color: 'red'
-        },
-      })
-    } finally {
-      fetchUsers();
-    }
+    createUser.mutate({
+      name: userForm.name,
+      email: userForm.email,
+      password: userForm.password,
+      confirmPassword: userForm.confirmPassword,
+      role: userForm.role
+    }, {
+      onSuccess: (response: AxiosResponse) => {
+        toast.success(response.data.message, {
+          style: {
+            color: 'green'
+          },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: {
+            color: 'red'
+          },
+        })
+      }
+    });
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,30 +74,12 @@ export default function UserPage() {
     })
   }
 
-  const handleSearch = (name: string) => {
-    if (!name) return fetchUsers();
-
-    setDataUsers(prev => ({
-      ...prev,
-      users: prev.users.filter(user => user.name.toLowerCase().includes(name.toLowerCase()))
-    }))
-  }
-
-  useEffect(() => {
-    fetchUsers(1);
-  }, [role])
-
   return (
     <PrivateGuard allowedRole="admin">
       <AdminLayout>
         <div className="flex flex-col p-4 pt-0 w-full">
           <div className="flex flex-row justify-between">
-            <Input 
-              type="search" 
-              placeholder="Find user by name" 
-              onChange={(e) => handleSearch(e.target.value)}
-              className="w-1/3 shadow-none placeholder:text-sm" 
-            />
+            <div />
             <div className="space-x-2">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
@@ -144,18 +93,20 @@ export default function UserPage() {
                     Role
                   </DropdownMenuLabel>
                   <DropdownMenuCheckboxItem
-                    checked={role === "verifikator"}
-                    onCheckedChange={(value) => 
-                      setRole(value ? "verifikator" : undefined)
-                    }
+                    checked={roleOption === "verifikator"}
+                    onCheckedChange={(value) => {
+                      setRoleOption(value ? "verifikator" : undefined)
+                      setPage(1)
+                    }}
                   >
                     verifikator
                   </DropdownMenuCheckboxItem>
                   <DropdownMenuCheckboxItem
-                    checked={role === "user"}
-                    onCheckedChange={(value) => 
-                      setRole(value ? "user" : undefined)
-                    }
+                    checked={roleOption === "user"}
+                    onCheckedChange={(value) => {
+                      setRoleOption(value ? "user" : undefined)
+                      setPage(1)
+                    }}
                   >
                     user
                   </DropdownMenuCheckboxItem>
@@ -248,16 +199,16 @@ export default function UserPage() {
               </Dialog>
             </div>
           </div>
-          {loading ? (
+          {isLoading ? (
             <div className="flex h-96 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
-          ) : dataUsers.users.length === 0 ? (
+          ) : data.users.length === 0 ? (
             <div className="flex h-32 items-center justify-center bg-secondary rounded-md w-full mt-4 text-destructive font-semibold">
               No User Found
             </div>
           ) : (
             <>
-              <UserTable data={dataUsers} fetchUsers={fetchUsers} />
-              <PaginationTable data={dataUsers.meta} fetchData={fetchUsers} />
+              <UserTable data={data} />
+              <PaginationTable data={data.meta} fetchData={setPage} />
             </>
           )}
         </div>      

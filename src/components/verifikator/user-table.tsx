@@ -1,12 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import type { AxiosResponse } from "axios";
-import axiosInstance from "@/lib/axios";
 import { toast } from "sonner";
 import { Check, Ellipsis, X } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { AlertDialog, AlertDialogTrigger, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { useVerifyUser } from "@/hooks/use-verify-user";
 
 interface UserTableProps {
   data: {
@@ -24,30 +23,28 @@ interface UserTableProps {
       totalPage: number;
     }
   };
-  fetchUsers: () => Promise<void>; 
 }
 
-export function UserTable({ data, fetchUsers }: UserTableProps) {
-  const handleVerify = async (id: string) => {
-    try {
-      const response: AxiosResponse = await axiosInstance.put(`/verifikator/users/${id}/verify`);
+export function UserTable({ data }: UserTableProps) {
+  const verifyUser = useVerifyUser();
 
-      toast.success(response.data.message, {
-        style: { 
-          color: 'green' 
-        },
-      })
-    } catch (error: any) {
-      console.error(error);
-      
-      toast.error(error.response?.data.message, {
-        style: { 
-          color: 'red' 
-        },
-      })
-    } finally {
-      fetchUsers();
-    }
+  const handleVerify = async (id: string) => {
+    verifyUser.mutate({ id }, {
+      onSuccess: (response) => {
+        toast.success(response.data.message, {
+          style: { 
+            color: 'green' 
+          },
+        })
+      },
+      onError: (error: any) => {
+        toast.error(error.response?.data.message, {
+          style: { 
+            color: 'red' 
+          },
+        })
+      },
+    })
   }
 
   return (

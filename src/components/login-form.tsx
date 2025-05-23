@@ -2,7 +2,6 @@
 import { useState } from "react"
 import { cn } from "@/lib/utils"
 import type { AxiosResponse } from "axios"
-import axiosInstance from "@/lib/axios"
 import { Link } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { useDispatch } from "react-redux"
@@ -16,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import type { AppDispatch } from "@/store/store"
 import { Alert, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
+import { useLogin } from "@/hooks/use-login"
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -29,24 +29,26 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(false)
   const { register, handleSubmit, formState: { errors } } = useForm<FormData>({ resolver: zodResolver(formSchema) })
+  const login = useLogin()
 
   const onSubmit = async (data: FormData) => {
     setLoading(true)
 
-    try {
-      const reponse: AxiosResponse = await axiosInstance.post('/auth/login', {
-        email: data.email,
-        password: data.password
-      });
-      const accessToken: string = reponse.data.data.access_token;
-
-      dispatch(setLogin(accessToken));
-    } catch (error: any) {
-      setError(error.response?.data.message || 'Login failed');
-      console.error("Login failed", error.response?.data.message);
-    } finally {
-      setLoading(false);
-    }
+    login.mutate({
+      email: data.email,
+      password: data.password
+    }, {
+      onSuccess: (response: AxiosResponse) => {
+        const accessToken: string = response.data.data.access_token;
+        dispatch(setLogin(accessToken));
+        setLoading(false);
+      },
+      onError: (error: any) => {
+        setError(error.response?.data.message || 'Login failed');
+        console.error("Login failed", error.response?.data.message);
+        setLoading(false);
+      }
+    })
   }
 
   return (
