@@ -1,47 +1,15 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import type { AxiosResponse } from "axios";
-import axiosInstance from "@/lib/axios";
 import { ReceiptText } from "lucide-react";
+import { useSelector } from "react-redux";
+import type { RootState } from "@/store/store";
+import { useStatistics } from "@/hooks/use-statistics-user";
 import { CardOverview } from "@/components/card-overview";
 import PrivateGuard from "@/components/guard/private"
 import UserLayout from "@/components/layout/user"
 
 export default function DashboardPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [leaveRequest, setLeaveRequest] = useState<{
-    total: number
-    pending: number
-    canceled: number
-    revoked: number
-    approved: number
-    rejected: number
-  }>({
-    total: 0,
-    pending: 0,
-    canceled: 0,
-    revoked: 0,
-    approved: 0,
-    rejected: 0
-  })
-
-  const fetchLeaveRequestStatistic = async () => {
-    setIsLoading(true);
-
-    try {
-      const response: AxiosResponse = await axiosInstance.get('/user/leave-requests/statistics');
-
-      setLeaveRequest(response.data.data);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setIsLoading(false);
-    }
-  }
-
-  useEffect(() => {
-    fetchLeaveRequestStatistic();
-  }, [])
+  const role: string | null = useSelector((state: RootState) => state.auth.role);  
+  const { data, isLoading } = useStatistics(role as string);
 
   return (
     <PrivateGuard allowedRole="user">
@@ -52,7 +20,7 @@ export default function DashboardPage() {
               <div className="flex h-30 bg-secondary rounded-md w-full mt-4 animate-pulse"></div>
             ) : (
               <Link to="/user/leave-request">
-                <CardOverview index={2} title="Leave Request" value={leaveRequest.total} description="Total leave request" icon={ReceiptText} />              
+                <CardOverview index={2} title="Leave Request" value={data.total} description="Total leave request" icon={ReceiptText} />              
               </Link>
             )}
             <div/>

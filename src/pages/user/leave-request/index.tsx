@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { useSelector } from "react-redux"
-import axiosInstance from "@/lib/axios"
 import { toast } from "sonner"
 import { useLeaveRequest } from "@/hooks/use-leave-request"
 import { useCreateLeaveRequest } from "@/hooks/use-create-leave-request"
+import { useLeaveTypeRequest } from "@/hooks/use-type-leave-request"
 import PrivateGuard from "@/components/guard/private"
 import UserLayout from "@/components/layout/user"
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
@@ -19,12 +19,9 @@ import type { RootState } from "@/store/store"
 export default function LeaveRequestPage() {
   const role: string | null = useSelector((state: RootState) => state.auth.role);  
   const [page, setPage] = useState<number>(1)
-  const { data, isLoading } = useLeaveRequest(role as string, status, page)
+  const { data, isLoading } = useLeaveRequest(role as string, undefined, page)
+  const { data: leaveTypes } = useLeaveTypeRequest()
   const crateLeaveRequest = useCreateLeaveRequest()  
-  const [leaveTypes, setLeaveTypes] = useState<Array<{
-    id: string
-    name: string
-  }>>([])
   const [leaveRequestsForm, setLeaveRequestsForm] = useState<{
     title: string
     description: string
@@ -78,25 +75,12 @@ export default function LeaveRequestPage() {
     })
   }
 
-  const fetchLeaveType = async () => {
-    try {
-      const response = await axiosInstance.get('/leave-types')
-      setLeaveTypes(response.data.data)
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  useEffect(() => {
-    fetchLeaveType()
-  }, [])
-
   return (
     <PrivateGuard allowedRole="user">
       <UserLayout>
         <div className="flex flex-col p-4 pt-0 w-full">
           <div className="flex flex-row justify-between">
-            <div></div>
+            <div/>
             <div className="space-x-2">
               <Dialog>
                 <DialogTrigger>
@@ -185,7 +169,7 @@ export default function LeaveRequestPage() {
                             <SelectValue placeholder="Select Leave Type" />
                           </SelectTrigger>
                           <SelectContent>
-                            {leaveTypes.map((leaveType) => (
+                            {(leaveTypes ?? []).map((leaveType: any) => (
                               <SelectItem key={leaveType.id} value={leaveType.id}>
                                 {leaveType.name}
                               </SelectItem>
